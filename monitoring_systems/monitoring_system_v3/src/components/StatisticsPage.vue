@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { ChartComp } from './ChartComp.vue'
+import ChartComp from './ChartComp.vue'
 
 const nameToKor = new Map([
   ['longitude', '위도'],
@@ -39,6 +39,8 @@ let selected =
 }
 const selectedTotal = ref(0)
 
+const selectedData = []
+
 // const sample = {
 //   longitude: 36.3721,
 //   langitude: 127.3604,
@@ -65,10 +67,13 @@ function toggleSelected(event, name) {
   if (selected[name] == false) {
     selected[name] = true
     selectedTotal.value++
+    selectedData.push(name)
   }
   else {
     selected[name] = false
     selectedTotal.value--
+    const index = selectedData.indexOf(name)
+    selectedData.splice(index, 1)
   }
   event.currentTarget.classList.toggle('selected')
 }
@@ -83,7 +88,7 @@ function toggleSelected(event, name) {
       </div>
     </div>
     <div class="statistics-display">
-      <ChartComp :selected="selected" :selectedTotal="selectedTotal" />
+      <ChartComp :selected="selected" :selectedTotal="selectedTotal" :selectedData="selectedData" />
     </div>
     <div class="container">
       <div :class="{ info: true, 'chart-name': true }" v-for="name in bottomInfoNames" v-bind:key="name"

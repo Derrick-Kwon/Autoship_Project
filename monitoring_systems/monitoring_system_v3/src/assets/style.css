@@ -155,6 +155,10 @@
   border: 1px solid;
   border-color: #ECECEC;
   border-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .selected {
@@ -163,4 +167,15 @@
 
 .chart-name {
   cursor: pointer;
+}
+
+.chart {
+  /* flex-grow: 1; */
+  margin: 10px;
+  padding: 10px;
+  min-height: 40%;
+  min-width: 44%;
+  border: 1px solid;
+  border-color: #ECECEC;
+  border-radius: 5px;
 }
