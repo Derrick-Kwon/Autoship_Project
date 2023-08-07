@@ -160,3 +160,7 @@
 .selected {
   background-color: #229AAB;
 }
+
+.chart-name {
+  cursor: pointer;
+}

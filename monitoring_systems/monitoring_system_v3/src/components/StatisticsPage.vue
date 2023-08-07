@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue';
+import { ref } from 'vue'
+import { ChartComp } from './ChartComp.vue'
 
 const nameToKor = new Map([
   ['longitude', '위도'],
@@ -23,7 +24,8 @@ const nameToKor = new Map([
 ])
 const topInfoNames = ['wind', 'temperature', 'precipitation', 'speed', 'RPM']
 const bottomInfoNames = ['fuel', 'danger', 'status', 'crash', 'tilt']
-let selected = {
+let selected =
+{
   'wind': false,
   'temperature': false,
   'precipitation': false,
@@ -35,14 +37,7 @@ let selected = {
   'crash': false,
   'tilt': false,
 }
-const selectedTotal = computed(() => {
-  let total = 0
-  for (const key in Object.keys(selected)) {
-    if (selected[key]) total++
-  }
-  return total
-})
-
+const selectedTotal = ref(0)
 
 // const sample = {
 //   longitude: 36.3721,
@@ -66,25 +61,34 @@ const selectedTotal = computed(() => {
 
 function toggleSelected(event, name) {
   console.log("toggle: ", name)
-  if (selectedTotal.value == 4 && selected[name] == false) return
-  if (selected[name] == false) selected[name] = true
-  else selected[name] = false
-  // event.target.classList.toggle('selected')
+  if (selectedTotal.value >= 4 && selected[name] == false) return
+  if (selected[name] == false) {
+    selected[name] = true
+    selectedTotal.value++
+  }
+  else {
+    selected[name] = false
+    selectedTotal.value--
+  }
+  event.currentTarget.classList.toggle('selected')
 }
 </script>
 
 <template>
   <div class="statistics-container">
     <div class="container">
-      <div :class="{ info: true, selected: selected[name] }" v-for="name in topInfoNames" v-bind:key="name">
-        <div class="name" @click="toggleSelected(name)">{{ nameToKor.get(name) }}</div>
+      <div :class="{ info: true, 'chart-name': true }" v-for="name in topInfoNames" v-bind:key="name"
+        @click="toggleSelected($event, name)">
+        <div class="name">{{ nameToKor.get(name) }}</div>
       </div>
     </div>
     <div class="statistics-display">
+      <ChartComp :selected="selected" :selectedTotal="selectedTotal" />
     </div>
     <div class="container">
-      <div class="info" v-for="name in bottomInfoNames" v-bind:key="name">
-        <div class="name" @click="toggleSelected(name)">{{ nameToKor.get(name) }}</div>
+      <div :class="{ info: true, 'chart-name': true }" v-for="name in bottomInfoNames" v-bind:key="name"
+        @click="toggleSelected($event, name)">
+        <div class="name">{{ nameToKor.get(name) }}</div>
       </div>
     </div>
   </div>
