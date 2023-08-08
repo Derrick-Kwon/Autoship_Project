@@ -16,7 +16,6 @@ export default defineComponent({
     }
   },
   mounted() {
-    setInterval(this.move, 500)
   },
   methods: {
     move() {
@@ -26,8 +25,11 @@ export default defineComponent({
       option.date = Date()
       this.circles.push(option)
     },
-    showDate() {
-
+    startMove() {
+      this.interval = setInterval(this.move, 500)
+    },
+    endMove() {
+      clearInterval(this.interval)
     }
   }
 })
@@ -37,11 +39,11 @@ export default defineComponent({
 
 <template>
   <GoogleMap api-key="AIzaSyAzKCIGiO7ODgLmp5ZhPLb4p3TVG8vBVEc" style="width: 100%; height: 100%;" :center="center"
-    :zoom="15" language="kor" id="map">
+    :zoom="15" language="kor" id="map" @mouseover="startMove" @mouseleave="endMove">
     <Marker :options="markerOptions" />
     <Circle :options="circleOptions">
     </Circle>
-    <Circle v-for="circle in circles" :options="circle" :key="circle" v-bind="circles" @mouseover="showDate"></Circle>
+    <Circle v-for="circle in circles" :options="circle" :key="circle" v-bind="circles"></Circle>
   </GoogleMap>
 </template>
 
