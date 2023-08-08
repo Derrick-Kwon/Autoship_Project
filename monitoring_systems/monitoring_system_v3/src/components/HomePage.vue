@@ -4,10 +4,10 @@ import MapComp from './MapComp.vue';
 // const topInfoNamesKor: Array<string> = ['경도', '위도', '진행률', '통신상태', '풍속', '풍향', '기온', '강수']
 // const bottomInfoNamesKor: Array<string> = ['속도', 'RPM', '연료량', '방향']
 // const middleInfoNamesKor: Array<string> = ['작동모드', '충돌위험', '상태', '속도', '위험도', '기울기']
-// const infoNames: Array<string> = ['longitude', 'langitude', 'progress', 'communication', 'windSpeed', 'windDirection', 'temperature', 'precipitation', 'speed', 'speed', 'RPM', 'fuel', 'direction', 'mode', 'danger', 'status', 'speed', 'crash', 'tilt']
+// const infoNames: Array<string> = ['longitude', 'latitude', 'progress', 'communication', 'windSpeed', 'windDirection', 'temperature', 'precipitation', 'speed', 'speed', 'RPM', 'fuel', 'direction', 'mode', 'danger', 'status', 'speed', 'crash', 'tilt']
 const nameToKor = new Map([
   ['longitude', '위도'],
-  ['langitude', '경도'],
+  ['latitude', '경도'],
   ['progress', '진행상황'],
   ['communication', '통신상태'],
   ['windSpeed', '풍속'],
@@ -24,14 +24,14 @@ const nameToKor = new Map([
   ['crash', '충돌위험'],
   ['tilt', '기울기']
 ])
-const topInfoNames = ['longitude', 'langitude', 'progress', 'communication', 'windSpeed', 'windDirection', 'temperature', 'precipitation']
+const topInfoNames = ['longitude', 'latitude', 'progress', 'communication', 'windSpeed', 'windDirection', 'temperature', 'precipitation']
 const bottomInfoNames = ['speed', 'RPM', 'fuel', 'direction']
 const middleInfoNames = ['mode', 'danger', 'status', 'crash', 'tilt']
 
 
 const sample = {
   longitude: 36.3721,
-  langitude: 127.3604,
+  latitude: 127.3604,
   progress: 50,
   communication: 3,
   windSpeed: 2.7,
@@ -58,7 +58,7 @@ const sample = {
           <div class="name">{{ nameToKor.get(name) }}</div>
           <div>
             <span v-if="name == 'longitude'" class="value">{{ sample[name] }}°N</span>
-            <span v-else-if="name == 'langitude'" class="value">{{ sample[name] }}°E</span>
+            <span v-else-if="name == 'latitude'" class="value">{{ sample[name] }}°E</span>
             <span v-else-if="name == 'progress'" class="value">{{ sample[name] }}%</span>
             <span v-else-if="name == 'communication' && sample[name] == 1" class="material-icons value">
               signal_cellular_alt_1_bar
@@ -95,7 +95,7 @@ const sample = {
             <img src="/rador.svg">
           </div>
           <div>
-            <div style="text-align: center; margin: 5px">{{ sample['longitude'] }}°N {{ sample['langitude'] }}°E</div>
+            <div style="text-align: center; margin: 5px">{{ sample['longitude'] }}°N {{ sample['latitude'] }}°E</div>
           </div>
           <div class="camera">
             <!-- <iframe width="240" height="180" frameBorder="0" src="http://192.168.137.73:9090/?action=stream">

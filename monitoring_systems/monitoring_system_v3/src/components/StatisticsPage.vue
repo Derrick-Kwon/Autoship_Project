@@ -4,7 +4,7 @@ import ChartComp from './ChartComp.vue'
 
 const nameToKor = new Map([
   ['longitude', '위도'],
-  ['langitude', '경도'],
+  ['latitude', '경도'],
   ['progress', '진행상황'],
   ['communication', '통신상태'],
   ['windSpeed', '풍속'],
@@ -43,7 +43,7 @@ const selectedData = []
 
 // const sample = {
 //   longitude: 36.3721,
-//   langitude: 127.3604,
+//   latitude: 127.3604,
 //   progress: 50,
 //   communication: 3,
 //   windSpeed: 2.7,
