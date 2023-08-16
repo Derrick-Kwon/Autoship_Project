@@ -1,5 +1,5 @@
 <script setup>
-import MapComp from './MapComp.vue';
+import { MapComp, onMounted, ref } from './MapComp.vue';
 
 // const topInfoNamesKor: Array<string> = ['경도', '위도', '진행률', '통신상태', '풍속', '풍향', '기온', '강수']
 // const bottomInfoNamesKor: Array<string> = ['속도', 'RPM', '연료량', '방향']
@@ -28,7 +28,7 @@ const topInfoNames = ['longitude', 'latitude', 'progress', 'communication', 'win
 const bottomInfoNames = ['speed', 'RPM', 'fuel', 'direction']
 const middleInfoNames = ['mode', 'danger', 'status', 'crash', 'tilt']
 
-
+const data = ref({})
 const sample = {
   longitude: 36.3721,
   latitude: 127.3604,
@@ -48,6 +48,15 @@ const sample = {
   crash: 40,
   tilt: 2,
 }
+
+function getData() {
+  return
+}
+
+onMounted(() => {
+  setInterval(getData, 1000)
+})
+
 </script>
 
 <template>
