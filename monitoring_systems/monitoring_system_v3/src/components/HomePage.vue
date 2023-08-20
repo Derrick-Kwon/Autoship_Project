@@ -1,5 +1,7 @@
 <script setup>
-import { MapComp, onMounted, ref } from './MapComp.vue';
+import * as MapComp from './MapComp.vue'
+import { onMounted, ref } from 'vue'
+import * as mysql from 'mysql'
 
 // const topInfoNamesKor: Array<string> = ['경도', '위도', '진행률', '통신상태', '풍속', '풍향', '기온', '강수']
 // const bottomInfoNamesKor: Array<string> = ['속도', 'RPM', '연료량', '방향']
@@ -49,12 +51,34 @@ const sample = {
   tilt: 2,
 }
 
-function getData() {
-  return
+// database
+async function testData() {
+  // console.log("host: ", process.env.VUE_APP_DB_HOST)
+  const conn = mysql.createConnection({
+    host: process.env.VUE_APP_DB_HOST,
+    user: process.env.VUE_APP_DB_USER,
+    port: '3306',
+    password: process.env.VUE_APP_DB_PW,
+    database: 'raspi_db',
+  })
+  conn.connect()
+  try {
+    const rows = await conn.query("SELECT * from collect_data")
+    console.log(rows)
+    // rows: [ {val: 1}, meta: ... ]
+
+    // const res = await conn.query("INSERT INTO  collect_data (?, ?, ?, ?)", ['gps', Date(), 36.3721, 127.3604])
+    // if (res.affectedRows != 1) console.log("cannot insert value")
+    // // res: { affectedRows: 1, insertId: 1, warningStatus: 0 }
+  } finally {
+    if (conn) conn.release()
+  }
+  return data
 }
 
 onMounted(() => {
-  setInterval(getData, 1000)
+  testData()
+  // setInterval(getData, 1000)
 })
 
 </script>
