@@ -1,5 +1,5 @@
 <script setup>
-import * as MapComp from './MapComp.vue'
+import MapComp from './MapComp.vue'
 import { onMounted, ref } from 'vue'
 import * as mysql from 'mysql'
 
@@ -60,6 +60,7 @@ async function testData() {
     port: '3306',
     password: process.env.VUE_APP_DB_PW,
     database: 'raspi_db',
+    connectionLimit: 5,
   })
   conn.connect()
   try {
