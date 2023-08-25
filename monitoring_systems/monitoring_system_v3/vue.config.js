@@ -6,6 +6,13 @@ module.exports = defineConfig({
 const { ProvidePlugin } = require("webpack");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 module.exports = defineConfig({
+  devServer: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000"
+      },
+    },
+  },
   transpileDependencies: true,
   lintOnSave: false,
   configureWebpack: (config) => {
@@ -33,4 +40,4 @@ module.exports = defineConfig({
       })
     );
   },
-});
+})
