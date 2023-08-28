@@ -1,5 +1,6 @@
 <script setup>
 import MapComp from './MapComp.vue'
+import RadorComp from './RadorComp.vue';
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 
@@ -113,10 +114,8 @@ onMounted(() => {
           <MapComp></MapComp>
         </div>
         <div class="body-right-banner">
-          <div class="rador">
-            <img src="/rador.svg">
-          </div>
           <div>
+            <RadorComp></RadorComp>
             <div style="text-align: center; margin: 5px">{{ data['longitude'] }}°N {{ data['latitude'] }}°E</div>
           </div>
           <div class="camera">
