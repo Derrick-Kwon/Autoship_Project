@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GPS Tracker</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude">
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude">
+    <button onclick="addMarker()">도착지 설정</button>
+</div>
+
+<div id="directionVector">방향벡터: <span id="vectorDisplay">[0, 0]</span></div>
+
+<div>
+    <button onclick="addWaypoint()">경유지 추가</button>
+    <button onclick="setDestination()">목적지 설정</button>
+    <button onclick="handleGoClick()">운항 GO!</button>
+    <button onclick="sendToArduino()">아두이노로 전송</button>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js">
+
+function handleGoClick() {
+    if (waypoints.length > 0 && finalDestination) {
+        var latlngs = [];
+        waypoints.forEach(function(waypoint) {
+            latlngs.push(waypoint.getLatLng());
+        });
+        latlngs.push(finalDestination.getLatLng());
+        var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+        map.fitBounds(polyline.getBounds());
+    }
+}
+
+    var dataToSend = {
+        directionX: directionVector.x,
+        directionY: directionVector.y,
+        currentLat: userPos.lat,
+        currentLng: userPos.lng,
+        targetLat: targetPosition.lat,
+        targetLng: targetPosition.lng
+    };
+
+    // Send data to the server (Python backend)
+    fetch('/send_vector', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        if (data.message === "Success") {
+            alert("Data sent successfully!");
+        }
+    });
+}
+
+
+var waypoints = [];
+var finalDestination;
+
+function addWaypoint() {
+    var lat = parseFloat(document.getElementById('latitude').value);
+    var lng = parseFloat(document.getElementById('longitude').value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid coordinates.");
+        return;
+    }
+
+    var waypoint = L.marker([lat, lng]).addTo(map);
+    waypoints.push(waypoint);
+}
+
+    var lat = parseFloat(document.getElementById('latitude').value);
+    var lng = parseFloat(document.getElementById('longitude').value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid coordinates.");
+        return;
+    }
+
+    var dataToSend = {
+        x: lat,
+        y: lng
+    };
+
+    fetch('/add_waypoint', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === "Waypoint added successfully") {
+            alert("경유지가 성공적으로 추가되었습니다.");
+        }
+    });
+}
+
+
+function setDestination() {
+    if (waypoints.length > 0) {
+        finalDestination = waypoints[waypoints.length - 1];
+        finalDestination.bindPopup("Final Destination").openPopup();
+    }
+}
+
+    var lat = parseFloat(document.getElementById('latitude').value);
+    var lng = parseFloat(document.getElementById('longitude').value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid coordinates.");
+        return;
+    }
+
+    targetPosition = {lat: lat, lng: lng};
+
+    // Calculate the direction vector
+    directionVector.x = targetPosition.lat - userPos.lat;
+    directionVector.y = targetPosition.lng - userPos.lng;
+
+    document.getElementById('vectorDisplay').textContent = "[" + directionVector.x + ", " + directionVector.y + "]";
+}
+
+function sendToArduino() {
+    // Here, you can make an AJAX call to the /send_vector endpoint to send data to Arduino
+    // Example:
+    // $.post("/send_vector", {data: your_data}, function(response) {
+    //     alert(response.message);
+    // });
+    alert("Data sent to Arduino!");  // For now, just an alert, you can replace with the actual AJAX call
+}
+
+</script>
+<script>
+
+var directionVector = {x: 0, y: 0};
+var targetPosition = {lat: 0, lng: 0};
+
+var map = L.map('map').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var userPos;
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            userPos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+
+            L.marker([userPos.lat, userPos.lng]).addTo(map)
+                .bindPopup('Your Location').openPopup();
+
+            map.setView([userPos.lat, userPos.lng], 13);
+        });
+    } else {
+        alert("Your browser doesn't support geolocation.");
+    }
+
+
+function addMarker() {
+    var lat = parseFloat(document.getElementById('latitude').value);
+    var lng = parseFloat(document.getElementById('longitude').value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid coordinates.");
+        return;
+    }
+
+    var marker = L.marker([lat, lng], {color: 'red'}).addTo(map);
+    targetPosition = {lat: lat, lng: lng};
+
+    // Calculate the direction vector
+    directionVector.x = targetPosition.lat - userPos.lat;
+    directionVector.y = targetPosition.lng - userPos.lng;
+
+    document.getElementById('vectorDisplay').textContent = "[" + directionVector.x + ", " + directionVector.y + "]";
+}
+
+        var lat = parseFloat(document.getElementById('latitude').value);
+        var lng = parseFloat(document.getElementById('longitude').value);
+
+        if (isNaN(lat) || isNaN(lng)) {
+            alert("Please enter valid coordinates.");
+            return;
+        }
+
+        var marker = L.marker([lat, lng], {color: 'red'}).addTo(map);
+        var arrow = L.polyline([[userPos.lat, userPos.lng], [lat, lng]], {color: 'blue'}).addTo(map);
+
+        var directionVector = "Direction Vector: (" + (userPos.lat - lat) + ", " + (userPos.lng - lng) + ")";
+        document.getElementById('directionVector').innerText = directionVector;
+
+        var directionVector = "Direction Vector: (" + (userPos.lat - lat) + ", " + (userPos.lng - lng) + ")";
+        document.getElementById('directionVector').innerText = directionVector;
+
+        sendVectorToServer(userPos.lat - lat, userPos.lng - lng);
+    }
+
+    function sendVectorToServer(x, y) {
+    fetch('http://127.0.0.1:5000/send_vector', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            x: x,
+            y: y
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+}
+
+
+
+
+function handleGoClick() {
+    if (waypoints.length > 0 && finalDestination) {
+        var latlngs = [];
+        waypoints.forEach(function(waypoint) {
+            latlngs.push(waypoint.getLatLng());
+        });
+        latlngs.push(finalDestination.getLatLng());
+        var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+        map.fitBounds(polyline.getBounds());
+    }
+}
+
+    var dataToSend = {
+        directionX: directionVector.x,
+        directionY: directionVector.y,
+        currentLat: userPos.lat,
+        currentLng: userPos.lng,
+        targetLat: targetPosition.lat,
+        targetLng: targetPosition.lng
+    };
+
+    // Send data to the server (Python backend)
+    fetch('/send_vector', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        if (data.message === "Success") {
+            alert("Data sent successfully!");
+        }
+    });
+}
+
+
+var waypoints = [];
+var finalDestination;
+
+function addWaypoint() {
+    var lat = parseFloat(document.getElementById('latitude').value);
+    var lng = parseFloat(document.getElementById('longitude').value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid coordinates.");
+        return;
+    }
+
+    var waypoint = L.marker([lat, lng]).addTo(map);
+    waypoints.push(waypoint);
+}
+
+    var lat = parseFloat(document.getElementById('latitude').value);
+    var lng = parseFloat(document.getElementById('longitude').value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid coordinates.");
+        return;
+    }
+
+    var dataToSend = {
+        x: lat,
+        y: lng
+    };
+
+    fetch('/add_waypoint', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === "Waypoint added successfully") {
+            alert("경유지가 성공적으로 추가되었습니다.");
+        }
+    });
+}
+
+
+function setDestination() {
+    if (waypoints.length > 0) {
+        finalDestination = waypoints[waypoints.length - 1];
+        finalDestination.bindPopup("Final Destination").openPopup();
+    }
+}
+
+    var lat = parseFloat(document.getElementById('latitude').value);
+    var lng = parseFloat(document.getElementById('longitude').value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Please enter valid coordinates.");
+        return;
+    }
+
+    targetPosition = {lat: lat, lng: lng};
+
+    // Calculate the direction vector
+    directionVector.x = targetPosition.lat - userPos.lat;
+    directionVector.y = targetPosition.lng - userPos.lng;
+
+    document.getElementById('vectorDisplay').textContent = "[" + directionVector.x + ", " + directionVector.y + "]";
+}
+
+function sendToArduino() {
+    // Here, you can make an AJAX call to the /send_vector endpoint to send data to Arduino
+    // Example:
+    // $.post("/send_vector", {data: your_data}, function(response) {
+    //     alert(response.message);
+    // });
+    alert("Data sent to Arduino!");  // For now, just an alert, you can replace with the actual AJAX call
+}
+
+</script>
+
+</body>
+</html>

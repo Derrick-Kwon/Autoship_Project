@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serial Data Viewer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Serial Data: <span id="data">Loading...</span></h1>
+
+    <script>
+        function fetchData() {
+            $.getJSON('/data', function(data) {
+                $('#data').text(data.data);
+            });
+            setTimeout(fetchData, 1000);  // 1초마다 데이터 갱신
+        }
+        fetchData();
+    </script>
+</body>
+</html>
