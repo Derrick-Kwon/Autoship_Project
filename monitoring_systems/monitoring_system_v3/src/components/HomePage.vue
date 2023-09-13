@@ -66,9 +66,21 @@ async function testData() {
     .finally(console.log('testData executed'))
 }
 
+async function getWeather() {
+  axios.get('/api/weather')
+    .then((res) => {
+      console.log('weather: ', res.data)
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+    .finally(console.log('getWeather executed'))
+}
+
 onMounted(() => {
   // testData()
   setInterval(testData, 5000)
+  getWeather()
 })
 
 </script>

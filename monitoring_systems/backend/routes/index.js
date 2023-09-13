@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 const maria = require('../database/connect/maria')
+const axios = require('axios')
 
+// import { parse } from 'csv-parse'
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -18,6 +20,20 @@ router.get('/api/fetch', function (req, res) {
       res.send(err)
     }
   })
+})
+
+router.get('/api/weather', async function (req, res) {
+  const longitude = 127.3604
+  const latitude = 36.3721
+  try {
+    const response = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relativehumidity_2m,precipitation_probability,rain,showers,snowfall,weathercode,pressure_msl,surface_pressure,windspeed_10m&daily=weathercode&current_weather=true&timezone=Asia%2FTokyo&forecast_days=1`)
+
+    console.log(response.data)
+    res.send(response.data)
+  }
+  catch (error) {
+    console.log(error)
+  }
 })
 
 function genData(conn) {

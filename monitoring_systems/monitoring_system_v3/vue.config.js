@@ -11,6 +11,11 @@ module.exports = defineConfig({
       "/api": {
         target: "http://localhost:5000"
       },
+      // "/weather": {
+      //   target: "https://apihub.kma.go.kr/api/typ01/url/sea_obs.php?stn=0&help=1&authKey=r6zpsnyoT4ys6bJ8qF-MCw",
+      //   pathRewrite: { '^weather': '' },
+      //   changeOrigin: true,
+      // }
     },
   },
   transpileDependencies: true,
