@@ -22,14 +22,15 @@
         </div>
       </div>
       <HomePage v-if="ismain" />
-      <StatisticsPage v-else />
+      <!-- <StatisticsPage v-else /> -->
+      <GrafanaComp v-else />
     </div>
   </div>
 </template>
 
 <script setup>
 import HomePage from './components/HomePage.vue'
-import StatisticsPage from "./components/StatisticsPage.vue"
+import GrafanaComp from './components/GrafanaComp.vue';
 import { ref } from 'vue'
 
 const ismain = ref(true)
