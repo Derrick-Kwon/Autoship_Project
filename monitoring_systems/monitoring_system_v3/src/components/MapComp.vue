@@ -51,7 +51,6 @@ export default defineComponent({
     move() {
       const data = this.voyageData.shift()
       if (typeof data === "undefined") {
-        this.endMove()
         return
       }
 
@@ -62,13 +61,13 @@ export default defineComponent({
 
       const dlatTotal = p2.lat - p1.lat
       const dlngTotal = p2.lng - p1.lng
-      const dlat = dlatTotal * data.progress
-      const dlng = dlngTotal * data.progress
+      const dlat = dlatTotal / (data.max_index + 1)
+      const dlng = dlngTotal / (data.max_index + 1)
 
       const option = this.circleOptions
       option.date = Date()
-      option.center.lat = p1.lat + dlat
-      option.center.lng = p1.lng + dlng
+      option.center.lat = p1.lat + (dlat * data.index) + (dlat * data.progress) + Math.random() * 0.000005 - 0.0000025
+      option.center.lng = p1.lng + (dlng * data.index) + (dlng * data.progress) + Math.random() * 0.000005 - 0.0000025
 
       this.circles.push(option)
     },
