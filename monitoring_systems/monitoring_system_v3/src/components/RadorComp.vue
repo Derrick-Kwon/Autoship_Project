@@ -5,40 +5,51 @@
 </template>
 <script>
 import * as d3 from "d3";
+import voyageData from '../assets/voyage-data.json'
 export default {
   data() {
     const width = 250
     const height = 250
-    return { width, height }
+    return { width, height, voyageData: voyageData }
   },
   methods: {
     showRador: function () {
-      const randAngle = Math.random() * 360
-      const randDist = Math.random() * 10
-      const center = this.width / 2
-      const cx = center + Math.cos(randAngle) * randDist * center / 10
-      const cy = center + Math.sin(randAngle) * randDist * center / 10
+      // const randAngle = Math.random() * 360
+      // const randDist = Math.random() * 10
+      if (this.voyageData.length < 1) {
+        return
+      }
+      const data = this.voyageData.shift().ridar_points
+      for (let i = 0; i < data.length; i++) {
+        const point = data[i]
+        console.log("point: ")
+        console.log(point)
+        const noisex = Math.random() - 0.5
+        const noisey = Math.random() - 0.5
+        const center = this.width / 2
+        const cx = center + Math.cos(point.angle * Math.PI / 180) * point.distance / 25 * center / 10 + noisex
+        const cy = center + Math.sin(point.angle * Math.PI / 180) * point.distance / 25 * center / 10 + noisey
 
-      const circle = d3.select('svg').append('circle')
-        .attr('cx', cx)
-        .attr('cy', cy)
-        .attr('r', 5)
-        .attr('fill', 'red')
-        .attr("fill-opacity", 1)
-        .attr("stroke-opacity", 1)
-        .transition()
-        .duration(3000)
-        //change fill and stroke opacity to avoid CSS conflicts
-        .attr("fill-opacity", 0)
-        .attr("stroke-opacity", 0)
-        .remove() //remove after transitions are complete
-
-      setTimeout(this.showRador, 300)
+        d3.select('svg').append('circle')
+          .attr('cx', cx)
+          .attr('cy', cy)
+          .attr('r', 2)
+          .attr('fill', 'red')
+          .attr("fill-opacity", 1)
+          .attr("stroke-opacity", 1)
+          .transition()
+          .duration(1000)
+          //change fill and stroke opacity to avoid CSS conflicts
+          .attr("fill-opacity", 0)
+          .attr("stroke-opacity", 0)
+          .remove() //remove after transitions are complete
+      }
+      setTimeout(this.showRador, 500)
     },
   },
   mounted() {
     d3.select('svg').append("svg:image").attr("xlink:href", "/rador.svg")
-    this.showRador()
+    setTimeout(this.showRador, 5000)
 
     // const g = svg.append("g");
 

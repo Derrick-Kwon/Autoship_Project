@@ -31,8 +31,8 @@ export default defineComponent({
   },
   mounted() {
     this.pathOptions = this.initPath
-    this.voyageData.max_indices.pop()
     this.max_indices = this.voyageData.max_indices
+    setTimeout(this.startMove, 5000)
   },
   methods: {
     // move() {
@@ -72,7 +72,7 @@ export default defineComponent({
       this.circles.push(option)
     },
     startMove() {
-      this.interval = setInterval(this.move, 100)
+      this.interval = setInterval(this.move, 500)
     },
     endMove() {
       clearInterval(this.interval)
@@ -82,9 +82,9 @@ export default defineComponent({
 </script>
 
 <template>
-  <GoogleMap api-key="AIzaSyAzKCIGiO7ODgLmp5ZhPLb4p3TVG8vBVEc" style="width: 100%; height: 100%;" :center="center"
-    :zoom="15" language="kor" id="map" @mouseenter="startMove" @mouseleave="endMove">
-    <Marker :options="markerOptions" @mouseup="console.log('marker position: ', this.markerOptions.position)" />
+  <GoogleMap api-key="AIzaSyAzKCIGiO7ODgLmp5ZhPLb4p3TVG8vBVEc" style="width: 100%; height: 100%;" :center="points[2]"
+    :zoom="20" language="kor" id="map" @mouseenter="startMove" @mouseleave="endMove">
+    <!-- <Marker :options="markerOptions" @mouseup="console.log('marker position: ', this.markerOptions.position)" /> -->
     <Circle v-for="circle in circles" :options="circle" :key="circle" v-bind="circles"></Circle>
     <!-- <Polyline :options="pathOptions" :key="pathOptions.path" /> -->
 

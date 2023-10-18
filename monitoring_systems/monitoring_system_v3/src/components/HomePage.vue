@@ -33,8 +33,8 @@ const middleInfoNames = ['mode', 'danger', 'status', 'crash', 'tilt']
 
 const data = ref()
 const sample = {
-  longitude: 36.3721,
-  latitude: 127.3604,
+  longitude: 37.2978,
+  latitude: 126.83339,
   progress: 50,
   communication: 3,
   windSpeed: 2.7,
@@ -47,7 +47,7 @@ const sample = {
   mode: 'autonomous',
   danger: 40,
   status: 'safe',
-  speed: 60,
+  speed: 5,
   crash: 40,
   tilt: 2,
 }
