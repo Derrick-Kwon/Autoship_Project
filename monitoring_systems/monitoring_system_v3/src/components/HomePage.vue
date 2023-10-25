@@ -92,23 +92,23 @@ onMounted(() => {
         <div class="info" v-for="name in topInfoNames" v-bind:key="name">
           <div class="name">{{ nameToKor.get(name) }}</div>
           <div>
-            <span v-if="name == 'longitude'" class="value">{{ data[name] }}°N</span>
-            <span v-else-if="name == 'latitude'" class="value">{{ data[name] }}°E</span>
-            <span v-else-if="name == 'progress'" class="value">{{ data[name] }}%</span>
-            <span v-else-if="name == 'communication' && data[name] == 1" class="material-icons value">
+            <span v-if="name == 'longitude'" class="value longitude">{{ data[name] }}°N</span>
+            <span v-else-if="name == 'latitude'" class="value latitude">{{ data[name] }}°E</span>
+            <span v-else-if="name == 'progress'" class="value progress">{{ data[name] }}%</span>
+            <span v-else-if="name == 'communication' && data[name] == 1" class="material-icons value communication">
               signal_cellular_alt_1_bar
             </span>
-            <span v-else-if="name == 'communication' && data[name] == 2" class="material-icons value">
+            <span v-else-if="name == 'communication' && data[name] == 2" class="material-icons value communication">
               signal_cellular_alt_2_bar
             </span>
-            <span v-else-if="name == 'communication' && data[name] == 3" class="material-icons value">
+            <span v-else-if="name == 'communication' && data[name] == 3" class="material-icons value communication">
               signal_cellular_alt
             </span>
-            <span v-else-if="name == 'windSpeed'" class="value">{{ data[name] }}m/s</span>
-            <span v-else-if="name == 'windDirection'" class="material-icons value"
+            <span v-else-if="name == 'windSpeed'" class="value windSpeed">{{ data[name] }}m/s</span>
+            <span v-else-if="name == 'windDirection'" class="material-icons value windDirection"
               :style="{ rotate: data[name] + 'deg' }">north</span>
-            <span v-else-if="name == 'temperature'" class="value">{{ data[name] }}°C</span>
-            <span v-else-if="name == 'precipitation'" class="value">{{ data[name] }}mm</span>
+            <span v-else-if="name == 'temperature'" class="value temperature">{{ data[name] }}°C</span>
+            <span v-else-if="name == 'precipitation'" class="value precipitation">{{ data[name] }}mm</span>
           </div>
         </div>
       </div>
@@ -117,8 +117,8 @@ onMounted(() => {
           <div v-for="name in middleInfoNames" class="info middle-info" v-bind:key="name">
             <div class="name">{{ nameToKor.get(name) }}</div>
             <div>
-              <span v-if="name == 'tilt'" class="value">{{ data[name] }}°</span>
-              <span v-else class="value">{{ data[name] }}</span>
+              <span v-if="name == 'tilt'" class="value tilt">{{ data[name] }}°</span>
+              <span v-else :class="'value '+ name">{{ data[name] }}</span>
             </div>
           </div>
         </div>
@@ -142,11 +142,11 @@ onMounted(() => {
         <div v-for="name in bottomInfoNames" class="info" v-bind:key="name">
           <div class="name">{{ nameToKor.get(name) }} </div>
           <div>
-            <span v-if="name == 'speed'" class="value">{{ data[name] }}km/h</span>
-            <span v-else-if="name == 'fuel'" class="value">{{ data[name] }}%</span>
-            <span v-else-if="name == 'direction'" class="material-icons value"
+            <span v-if="name == 'speed'" class="value speed">{{ data[name] }}km/h</span>
+            <span v-else-if="name == 'fuel'" class="value fuel">{{ data[name] }}%</span>
+            <span v-else-if="name == 'direction'" class="material-icons value direction"
               :style="{ rotate: data[name] + 'deg' }">north</span>
-            <span v-else class="value">{{ data[name] }}</span>
+            <span v-else :class="'value '+name">{{ data[name] }}</span>
           </div>
         </div>
       </div>
