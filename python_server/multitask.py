@@ -15,35 +15,6 @@ app = Flask(__name__)
 destinations = deque()
 #arduino = serial.Serial('/dev/ttyACM0', 9600)  # 여기 포트 num은 라즈베리파이서 아두이노 실행시켜서 찾으면 됨(notion 참고)
 
-def gen_random_data():
-    insert_query = "INSERT INTO sample(id, create_time, longitude, latitude, progress, \
-    communication, windSpeed, windDirection, temperature, precipitation, RPM, \
-    fuel, direction, mode, danger, status, speed, crash, tilt) \
-    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-    id = 0
-    create_time = datetime.datetime.now()
-    longitude = 180 * random.random()
-    latitude = 180 * random.random()
-    progress = 100 * random.random()
-    communication = math.floor(3 * random.random()) + 1
-    windSpeed = 100 * random.random()
-    windDirection = 360 * random.random()
-    temperature = 40 * random.random()
-    precipitation = 60 * random.random()
-    rpm = 500 + 500 * random.random()
-    fuel = 100 * random.random()
-    direction = 360 * random.random()
-    mode = 'autonomous'
-    danger = 100 * random.random()
-    status = 'safe'
-    speed = 30 + 70 * random.random()
-    crash = 100 * random.random()
-    tilt = 30 * random.random()
-    values = (id, create_time, longitude, latitude, progress, communication, windSpeed, windDirection, temperature, precipitation, rpm, fuel, direction, mode, danger, status, speed, crash, tilt)
-
-    connect.cursor.execute(insert_query, values)
-    result = connect.cursor.fetchone()
-    print(result)
 
 @app.route('/')
 def index():
@@ -71,7 +42,7 @@ def navigate():
 
 @app.route('/api/fetch')
 def fetch():
-    gen_random_data()
+    connect.gen_random_data()
     fetch_message = "select * from sample order by id desc limit 1"
     connect.cursor.execute(fetch_message)
     result = connect.cursor.fetchone()
