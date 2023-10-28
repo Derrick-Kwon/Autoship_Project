@@ -1,0 +1,185 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+}
+
+.outside-page {
+  display: flex;
+  justify-content: center;
+}
+
+.menu {
+  cursor: pointer;
+}
+
+.logo,
+.menu-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-img {
+  margin: 10px;
+}
+
+.menu {
+  text-align: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  color: #fff;
+}
+
+.main {
+  background-color: #229AAB;
+}
+
+.statistics {
+  background-color: #A9A9A9;
+}
+
+
+.icon {
+  width: 30px;
+  height: 30px;
+}
+
+.menu-bar {
+  display: flex;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 1000px;
+}
+
+.main-margin {
+  display: flex;
+  flex-grow: 1;
+}
+
+
+.main {
+  background-color: #229AAB;
+}
+
+.statistics {
+  background-color: #A9A9A9;
+}
+
+
+.icon {
+  width: 30px;
+  height: 30px;
+
+}
+
+.menu-bar {
+  display: flex;
+}
+
+.container {
+  display: flex;
+}
+
+.bottom-info-containter>.info {
+  flex-grow: 1;
+}
+
+.info {
+  display: flex;
+  margin: 10px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border: 1px solid;
+  border-color: #ECECEC;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.name,
+.value {
+  text-align: center;
+}
+
+.body-left-banner {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+}
+
+.body-right-banner {
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.rador {
+  display: flex;
+  justify-content: center;
+}
+
+.middle-info {
+  max-width: 100px;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.value {
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.monitor-body {
+  display: flex;
+}
+
+/* statistics */
+.statistics-display {
+  height: 500px;
+  margin: 10px;
+  border: 1px solid;
+  border-color: #ECECEC;
+  border-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.selected {
+  background-color: #229AAB;
+}
+
+.chart-name {
+  cursor: pointer;
+}
+
+.chart {
+  /* flex-grow: 1; */
+  margin: 10px;
+  padding: 10px;
+  min-height: 40%;
+  min-width: 44%;
+  border: 1px solid;
+  border-color: #ECECEC;
+  border-radius: 5px;
+}
+
+.rador {
+  height: 250px;
+}
