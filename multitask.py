@@ -9,7 +9,6 @@ import connect
 import requests
 import datetime, random, math
 
-
 app = Flask(__name__)
 # 아두이노 시리얼 연결 설정
 destinations = deque()
@@ -90,17 +89,15 @@ def weather():
 def run_flask_app():
     app.run(host='0.0.0.0', port=5000)
 
-# def read_gps_data():
-#     # gpsd에 연결
-#     gpsd.connect()
-#     try:
-#         while True:
-#             packet = gpsd.get_current()
-#             print("Latitude:", packet.lat)
-#             print("Longitude:", packet.lon)
-#             time.sleep(1)
-#     except KeyboardInterrupt:
-#         print("Program end.")
+@app.route('/get_position')
+def get_position():
+    nx = cgps.next()
+    if nx['class'] == 'TPV':
+        latitude = getattr(nx, 'lat', None)
+        longitude = getattr(nx, 'lon', None)
+        return jsonify(latitude=latitude, longitude=longitude)
+    else:
+        return jsonify(error="No GPS data available")
 
 def print_msg():
     for i in range(100):
@@ -112,7 +109,7 @@ def print_msg():
 if __name__ == '__main__':
     flask_thread = threading.Thread(target=run_flask_app) #앱은 다른 쓰레드에서 실행했음
     flask_thread.start()
-    read_gps_data()
+    #read_gps_data()
 
 
     #print_msg() #여기 이부분이 추가 함수부분. 이 밑으로 수정하던가 함수 위에 추가로 만들면 됨.
