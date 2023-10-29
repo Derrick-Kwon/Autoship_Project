@@ -8,6 +8,8 @@ import time
 import connect
 import requests
 import datetime, random, math
+#수정 테스트
+
 
 app = Flask(__name__)
 # 아두이노 시리얼 연결 설정
