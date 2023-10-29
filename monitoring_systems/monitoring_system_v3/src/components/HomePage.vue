@@ -58,12 +58,12 @@ async function testData() {
   axios.get('/api/fetch')
     .then((res) => {
       console.log('fetch: ', res.data)
-      data.value = res.data[0]
+      data.value = res.data
     })
     .catch((err) => {
       console.error(err)
     })
-    .finally(console.log('testData executed'))
+    .finally(console.log("data: ", data.value))
 }
 
 async function getWeather() {

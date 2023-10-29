@@ -38,6 +38,7 @@ description_of = {
 # Convert forecast response into proper format
 def convert_forecast(response):
   response_body = response.json()["response"]["body"]
+  print("response body: ", response_body)
   itemlist = response_body["items"]["item"]
   result = {}
 
@@ -47,37 +48,51 @@ def convert_forecast(response):
       'metric': metric_of[item['category']],
       'decription': description_of[item['category']],
     }
+  result['basetime'] = itemlist[0]['baseDate'] + itemlist[0]['baseTime']
+  result['nx'] = itemlist[0]['nx']
+  result['ny'] = itemlist[0]['ny']
 
   return result
 
 # Get base time for forecasting
 def base_time():
-  if base.minute < 30:
-    return str(base.hour) + "00"
+  hour = base.hour
+  if hour<10:
+    hour = "0"+str(hour)
   else:
-    return str(base.hour) + "30"
+    hour = str(hour)
+  if base.minute < 30:
+    return str(hour) + "00"
+  else:
+    return str(hour) + "30"
 
 
 # Forecast
 def api_forecast(lat, lng):
   # 여기서 위도경도를 좌표로 바꿔주도록 한다
   position = grid.dfs_xy_conv("toXY", lat, lng)
-  print(position)
   url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
   params = {
     "serviceKey": "KnqHi2dIa1Z5DikYH66mNjQ31mQlH0bCyzPuaRUtyfJaQErYUwfuyH/vaGJT4719UQQYFBP8gyj1iS1KDPs4FA==",
     "pageNo": 1,
-    "numOfRows": 60,                  # 10개의 카테고리에서 6개씩 나옴
+    "numOfRows": 60,            # 10개의 카테고리에서 6개씩 나옴
     "dataType": 'json',
     "base_date": dateString,
-    "base_time": base_time(),  # 변환된 시간
+    "base_time": base_time(),   # 변환된 시간
     "nx": position["x"],
     "ny": position["y"],
   }
-  print("params: ", params)
   response = requests.get(url, params)
-  # print("response: ", response.json())
-  result = convert_forecast(response)
+  result = {}
+  try:
+    result = convert_forecast(response)
+  except:
+    print("response not convertable:")
+    print(response.content)
+    print("the parameters were:")
+    print(params)
+
+  print("result: ", result)
   return result
 
 

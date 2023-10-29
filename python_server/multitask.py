@@ -8,6 +8,7 @@ import time
 import connect
 import requests
 import datetime, random, math
+import forecast
 
 
 app = Flask(__name__)
@@ -40,23 +41,36 @@ def navigate():
     #arduino.write(f"h,{deltaX},{deltaY}\n".encode())  # h는 헤더, {destLat},{destLng},{angle} 는 추후 처리
     return jsonify({"message": "Navigating to set destination"})
 
+# API for fetch data
 @app.route('/api/fetch')
 def fetch():
     connect.gen_random_data()
     fetch_message = "select * from sample order by id desc limit 1"
     connect.cursor.execute(fetch_message)
-    result = connect.cursor.fetchone()
-    # print(result)
+
+    result_row = connect.cursor.fetchone()
+    result = {}
+    columns = connect.cursor.description
+
+    # Convert result row into an object
+    for i in range(len(result_row)):
+        result[columns[i][0]] = result_row[i]
     return jsonify(result)
 
 @app.route('/api/weather')
 def weather():
-    lng = "127.3604"
-    lat = "36.3721"
+    # default location
+    lng = 127.3604
+    lat = 36.3721
 
-    response = requests.get("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng+  "&hourly=temperature_2m,relativehumidity_2m,precipitation_probability,rain,showers,snowfall,weathercode,pressure_msl,surface_pressure,windspeed_10m&daily=weathercode&current_weather=true&timezone=Asia%2"+"FTokyo&forecast_days=1")
-    print(response.json())
-    return jsonify(response.json())
+    # if parameter for location is provided, use it.
+    parameter_dic = request.args.to_dict()
+    if len(parameter_dic) > 0 and parameter_dic["lng"] and parameter_dic["lat"]:
+        lng = parameter_dic["lng"]
+        lat = parameter_dic["lat"]
+    result = connect.get_weather(lat, lng)
+    
+    return jsonify(result)
 
 def run_flask_app():
     app.run(host='0.0.0.0', port=5000)

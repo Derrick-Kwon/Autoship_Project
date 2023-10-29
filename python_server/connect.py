@@ -1,13 +1,17 @@
 import datetime
 import math
 import random
+from flask import jsonify
 import mysql.connector
+import forecast
+import grid
 
 conn = mysql.connector.connect(
   host="localhost",
   user="root",
   password="mariapass",
   database="raspi_db",
+  autocommit=True
 )
 
 cursor = conn.cursor()
@@ -22,8 +26,70 @@ def insert_data(values):
   result = cursor.fetchone()
   return result
 
+def insert_weather(values):
+  insert_query = "INSERT INTO weather(id, basetime, nx, ny, T1H, RN1, UUU, VVV, REH, PTY, VEC, WSD) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+  
+  cursor.execute(insert_query, values)
+  result = cursor.fetchone()
+  return result
+
+def get_latest_weather():
+  fetch_message = "select * from weather order by id desc limit 1;"
+  cursor.execute(fetch_message)
+
+  result_row = cursor.fetchone()
+  result = {}
+  columns = cursor.description
+
+  # Convert result row into an object
+  if result_row:
+    for i in range(len(columns)):
+      result[columns[i][0]] = result_row[i]
+  return result
+
+def get_weather(lat, lng):
+  # get latest weather
+  result = get_latest_weather()
+  
+  # if the result is new, request for new data.
+  new_position = grid.dfs_xy_conv("toXY", lat, lng)
+  if result == {}:
+    print("result empty")
+  else:
+    if result['basetime'] != forecast.base_time():
+      print("different basetime")
+    if result['nx'] != new_position['x'] or result['ny'] != new_position['y']:
+      print("different position")
+
+  if result != {} and result['basetime'] == forecast.base_time() and result['nx'] == new_position['x'] and result['ny'] == new_position['y']:
+    return result
+
+  # Get weather data
+  forecast_result = forecast.api_forecast(lat, lng)
+
+  # Insert weather data into database
+  basetime = forecast_result['basetime']
+  T1H = forecast_result['T1H']['value']
+  RN1 = forecast_result['RN1']['value']
+  UUU = forecast_result['UUU']['value']
+  VVV = forecast_result['VVV']['value']
+  REH = forecast_result['REH']['value']
+  PTY = forecast_result['PTY']['value']
+  VEC = forecast_result['VEC']['value']
+  WSD = forecast_result['WSD']['value']
+  nx = forecast_result['nx']
+  ny = forecast_result['ny']
+  
+  weather_row = (0, basetime, nx, ny, T1H, RN1, UUU, VVV, REH, PTY, VEC, WSD)
+  insert_weather(weather_row)
+  result = get_latest_weather()
+  print("latest_row: ", result)
+  
+  return result
+  
 
 def gen_random_data():
+  id = 0
   create_time = datetime.datetime.now()
   longitude = 180 * random.random()
   latitude = 180 * random.random()
@@ -46,3 +112,6 @@ def gen_random_data():
   
   return insert_data(values)
 
+if __name__ == '__main__':
+  # test code
+  result = get_weather(36.3721, 127.3604)
