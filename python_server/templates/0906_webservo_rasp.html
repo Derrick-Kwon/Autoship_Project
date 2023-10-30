@@ -19,13 +19,13 @@
 
             updatePosition();
 
-            // if (navigator.geolocation) {
-            //     navigator.geolocation.getCurrentPosition(function (position) {
-            //         var pos = [position.coords.latitude, position.coords.longitude];
-            //         map.setView(pos, 15);
-            //         userMarker = L.marker(pos).addTo(map).bindPopup('Your Location').openPopup();
-            //     });
-            // }
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var pos = [position.coords.latitude, position.coords.longitude];
+                    map.setView(pos, 15);
+                    userMarker = L.marker(pos).addTo(map).bindPopup('Your Location').openPopup();
+                });
+            }
         }
         function updatePosition() {
             fetch('/get_position', {
@@ -38,7 +38,7 @@
                         color: 'red',
                         fillColor: '#f03',
                         fillOpacity: 0.5,
-                        radius: 5
+                        radius: 2
                     }).addTo(map);
                     circles.push(circle);
                 }

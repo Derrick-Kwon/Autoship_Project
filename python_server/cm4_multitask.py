@@ -91,7 +91,6 @@ def print_imu_serial():
         time.sleep(1)
 
 if __name__ == '__main__':
-   
     # GPS -> 위도경도
     #아두이노 -> IMU, 라이더 
     #여기는 쓰레드 부분 
