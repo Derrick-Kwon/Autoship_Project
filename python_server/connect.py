@@ -6,34 +6,88 @@ import mysql.connector
 import forecast
 import grid
 
-conn = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="mariapass",
-  database="raspi_db",
-  autocommit=True
-)
+# conn = mysql.connector.connect(
+#   host="localhost",
+#   user="root",
+#   password="mariapass",
+#   database="raspi_db",
+#   autocommit=True,
+# )
 
-cursor = conn.cursor()
+# cursor = conn.cursor()
 
 def insert_data(values):
   insert_query = "INSERT INTO sample(id, create_time, longitude, latitude, progress, \
   communication, windSpeed, windDirection, temperature, precipitation, RPM, \
   fuel, direction, mode, danger, status, speed, crash, tilt) \
   VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-  
+  conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="mariapass",
+    database="raspi_db",
+    autocommit=True,
+  )
+  cursor = conn.cursor()
   cursor.execute(insert_query, values)
   result = cursor.fetchone()
+  cursor.close()
+  conn.close()
   return result
 
 def insert_weather(values):
+  conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="mariapass",
+    database="raspi_db",
+    autocommit=True,
+  )
+  cursor = conn.cursor()
+
   insert_query = "INSERT INTO weather(id, basetime, nx, ny, T1H, RN1, UUU, VVV, REH, PTY, VEC, WSD) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
   
   cursor.execute(insert_query, values)
   result = cursor.fetchone()
+  cursor.close()
+  conn.close()
   return result
 
+def get_data():
+  conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="mariapass",
+    database="raspi_db",
+    autocommit=True,
+  )
+  cursor = conn.cursor()
+
+  fetch_message = "select * from sample order by id desc limit 1;"
+  cursor.execute(fetch_message)
+
+  result_row = cursor.fetchone()
+  result = {}
+
+  columns = cursor.description
+  cursor.close()
+  conn.close()
+
+  # Convert result row into an object
+  for i in range(len(result_row)):
+      result[columns[i][0]] = result_row[i]
+  return jsonify(result)
+
 def get_latest_weather():
+  conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="mariapass",
+    database="raspi_db",
+    autocommit=True,
+  )
+  cursor = conn.cursor()
+
   fetch_message = "select * from weather order by id desc limit 1;"
   cursor.execute(fetch_message)
 
@@ -45,9 +99,20 @@ def get_latest_weather():
   if result_row:
     for i in range(len(columns)):
       result[columns[i][0]] = result_row[i]
+  cursor.close()
+  conn.close()
   return result
 
 def get_weather(lat, lng):
+  conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="mariapass",
+    database="raspi_db",
+    autocommit=True,
+  )
+  cursor = conn.cursor()
+
   # get latest weather
   result = get_latest_weather()
   
@@ -56,8 +121,8 @@ def get_weather(lat, lng):
   if result == {}:
     print("result empty")
   else:
-    if result['basetime'] != forecast.base_time():
-      print("different basetime")
+    if result['basetime'][8:12] != forecast.base_time():
+      print("different basetime: ", result['basetime'][8:12], "", forecast.base_time())
     if result['nx'] != new_position['x'] or result['ny'] != new_position['y']:
       print("different position")
 
@@ -66,6 +131,8 @@ def get_weather(lat, lng):
 
   # Get weather data
   forecast_result = forecast.api_forecast(lat, lng)
+  if forecast_result['basetime'] == result['basetime'] and result['nx'] == new_position['x'] and result['ny'] == new_position['y']:
+    return result
 
   # Insert weather data into database
   basetime = forecast_result['basetime']
@@ -85,6 +152,8 @@ def get_weather(lat, lng):
   result = get_latest_weather()
   print("latest_row: ", result)
   
+  cursor.close()
+  conn.close()
   return result
   
 

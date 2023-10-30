@@ -46,17 +46,8 @@ def navigate():
 @app.route('/api/fetch')
 def fetch():
     connect.gen_random_data()
-    fetch_message = "select * from sample order by id desc limit 1"
-    connect.cursor.execute(fetch_message)
-
-    result_row = connect.cursor.fetchone()
-    result = {}
-    columns = connect.cursor.description
-
-    # Convert result row into an object
-    for i in range(len(result_row)):
-        result[columns[i][0]] = result_row[i]
-    return jsonify(result)
+    result = connect.get_data()
+    return result
 
 @app.route('/api/weather')
 def weather():
@@ -70,7 +61,7 @@ def weather():
         lng = parameter_dic["lng"]
         lat = parameter_dic["lat"]
     result = connect.get_weather(lat, lng)
-    
+    print("weather result: ", result)
     return jsonify(result)
 
 def run_flask_app():

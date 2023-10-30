@@ -32,6 +32,7 @@ const bottomInfoNames = ['speed', 'RPM', 'fuel', 'direction']
 const middleInfoNames = ['mode', 'danger', 'status', 'crash', 'tilt']
 
 const data = ref()
+const weather = ref()
 const sample = {
   longitude: 37.2978,
   latitude: 126.83339,
@@ -51,7 +52,10 @@ const sample = {
   crash: 40,
   tilt: 2,
 }
+const sampleWeather = {'id': 139, 'basetime': '202310310300', 'nx': 67, 'ny': 101, 'T1H': 0, 'RN1': 0, 'UUU': 0, 'VVV': 0, 'REH': 0, 'PTY': 0, 'VEC': 0, 'WSD': 0}
+
 data.value = sample
+weather.value = sampleWeather
 
 // database
 async function testData() {
@@ -70,6 +74,7 @@ async function getWeather() {
   axios.get('/api/weather')
     .then((res) => {
       console.log('weather: ', res.data)
+      weather.value = res.data
     })
     .catch((err) => {
       console.error(err)
@@ -80,7 +85,7 @@ async function getWeather() {
 onMounted(() => {
   // testData()
   setInterval(testData, 5000)
-  getWeather()
+  setInterval(getWeather, 5000)
 })
 
 </script>
@@ -104,11 +109,11 @@ onMounted(() => {
             <span v-else-if="name == 'communication' && data[name] == 3" class="material-icons value communication">
               signal_cellular_alt
             </span>
-            <span v-else-if="name == 'windSpeed'" class="value windSpeed">{{ data[name] }}m/s</span>
+            <span v-else-if="name == 'windSpeed'" class="value windSpeed">{{ weather.WSD }}m/s</span>
             <span v-else-if="name == 'windDirection'" class="material-icons value windDirection"
-              :style="{ rotate: data[name] + 'deg' }">north</span>
-            <span v-else-if="name == 'temperature'" class="value temperature">{{ data[name] }}°C</span>
-            <span v-else-if="name == 'precipitation'" class="value precipitation">{{ data[name] }}mm</span>
+              :style="{ rotate: weather.VEC + 'deg' }">north</span>
+            <span v-else-if="name == 'temperature'" class="value temperature">{{ weather.T1H }}°C</span>
+            <span v-else-if="name == 'precipitation'" class="value precipitation">{{ weather.RN1 }}mm</span>
           </div>
         </div>
       </div>

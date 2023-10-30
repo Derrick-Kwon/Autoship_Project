@@ -222,7 +222,7 @@
   padding-bottom: 3px;
   background-color: #229AAB;
   color: white;
-  border-radius: 5px;
+  border-radius: 7px;
   border: 0;
 }
 
@@ -233,8 +233,40 @@
 .destination-box {
   display: flex;
   flex-direction: row;
+  white-space: nowrap;
+}
+
+.destination-label {
+  font-weight: 600;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 10px;
 }
 
 .destination-input {
-  margin: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 10px;
+  border: 1px solid;
+  border-color: #ECECEC;
+  border-radius: 5px;
+}
+
+.destination-button {
+  font-weight: 500;
+  width: fit-content;
+  height: fit-content;
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  background-color: #229AAB;
+  color: white;
+  border-radius: 7px;
+  border: 0;
+}
+
+.destination-button:active {
+  background-color: #147D87;
 }

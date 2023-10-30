@@ -39,7 +39,7 @@
     </div>
     <div class="loginbox">
       <div class="login-label">비밀번호</div>
-      <input class="login-input" type="text" v-model="pw" @keyup.enter="login">
+      <input class="login-input" type="password" v-model="pw" @keyup.enter="login">
     </div>
     <div style="display: flex;">
       <button class="login-button" @click="login">로그인</button>
@@ -53,7 +53,7 @@ import GrafanaComp from './components/GrafanaComp.vue';
 import { ref } from 'vue'
 
 const ismain = ref(true)
-const logged_in = ref(true)
+const logged_in = ref(false)
 
 const id = ref("")
 const pw = ref("")
