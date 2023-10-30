@@ -17,15 +17,18 @@ import grid
 # cursor = conn.cursor()
 
 def insert_data(values):
-  insert_query = "INSERT INTO sample(id, create_time, longitude, latitude, progress, \
-  communication, windSpeed, windDirection, temperature, precipitation, RPM, \
-  fuel, direction, mode, danger, status, speed, crash, tilt) \
-  VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+  # insert_query = "INSERT INTO sample(id, create_time, longitude, latitude, progress, \
+  # communication, windSpeed, windDirection, temperature, precipitation, RPM, \
+  # fuel, direction, mode, danger, status, speed, crash, tilt) \
+  # VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+  insert_query = "insert into sensor(id, create_time, latitude, longitude, speed, \
+    pitch, roll, risk, angle, distance)\
+    values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
   conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="mariapass",
-    database="raspi_db",
+    password="kwon6821",
+    database="Tables",
     autocommit=True,
   )
   cursor = conn.cursor()
@@ -39,8 +42,8 @@ def insert_weather(values):
   conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="mariapass",
-    database="raspi_db",
+    password="kwon6821",
+    database="Tables",
     autocommit=True,
   )
   cursor = conn.cursor()
@@ -57,13 +60,13 @@ def get_data():
   conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="mariapass",
-    database="raspi_db",
+    password="kwon6821",
+    database="Tables",
     autocommit=True,
   )
   cursor = conn.cursor()
 
-  fetch_message = "select * from sample order by id desc limit 1;"
+  fetch_message = "select * from sensor order by id desc limit 1;"
   cursor.execute(fetch_message)
 
   result_row = cursor.fetchone()
@@ -82,8 +85,8 @@ def get_latest_weather():
   conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="mariapass",
-    database="raspi_db",
+    password="kwon6821",
+    database="Tables",
     autocommit=True,
   )
   cursor = conn.cursor()
@@ -107,8 +110,8 @@ def get_weather(lat, lng):
   conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="mariapass",
-    database="raspi_db",
+    password="kwon6821",
+    database="Tables",
     autocommit=True,
   )
   cursor = conn.cursor()

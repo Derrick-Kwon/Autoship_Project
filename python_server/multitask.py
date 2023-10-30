@@ -40,16 +40,15 @@ def navigate():
     #arduino.write(f"h,{deltaX},{deltaY}\n".encode())  # h는 헤더, {destLat},{destLng},{angle} 는 추후 처리
     return jsonify({"message": "Navigating to set destination"})
 
-@app.route('/api/send')
+@app.route('/api/send', methods=['POST'])
 def send():
-    parameter = getparameter()
-    sql message = "insert data values(?, ?, ?, )"
-    conn.execute(message, parameter)
-
-# raspberry
-def sendData(speed, distance):
-    requests.post('url', {speed, distance})
-
+    data = request.data
+    values = (0, datetime.datetime.now(), data['latitude'], data['longitude'],
+              data['speed'], data['pitch'], data['roll'],
+              data['risk'], data['angle'], data['distance'])
+    connect.insert_data(values)
+    
+    
 # API for fetch data
 @app.route('/api/fetch')
 def fetch():
@@ -72,8 +71,6 @@ def weather():
     print("weather result: ", result)
     return jsonify(result)
 
-def run_flask_app():
-    app.run(host='0.0.0.0', port=5000)
 
 @app.route('/get_position')
 def get_position():
@@ -91,7 +88,6 @@ def print_msg():
         time.sleep(1)
 
 if __name__ == '__main__':
-    flask_thread = threading.Thread(target=run_flask_app) #앱은 다른 쓰레드에서 실행했음
-    flask_thread.start()
-    #read_gps_data()
+    app.run(host='0.0.0.0', port=5000)
+    # read_gps_data()
     #print_msg() #여기 이부분이 추가 함수부분. 이 밑으로 수정하던가 함수 위에 추가로 만들면 됨.
