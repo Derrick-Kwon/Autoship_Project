@@ -17,13 +17,34 @@
                 attribution: 'Map data &copy; OpenStreetMap contributors'
             }).addTo(map);
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var pos = [position.coords.latitude, position.coords.longitude];
-                    map.setView(pos, 15);
-                    userMarker = L.marker(pos).addTo(map).bindPopup('Your Location').openPopup();
-                });
-            }
+            updatePosition();
+
+            // if (navigator.geolocation) {
+            //     navigator.geolocation.getCurrentPosition(function (position) {
+            //         var pos = [position.coords.latitude, position.coords.longitude];
+            //         map.setView(pos, 15);
+            //         userMarker = L.marker(pos).addTo(map).bindPopup('Your Location').openPopup();
+            //     });
+            // }
+        }
+        function updatePosition() {
+            fetch('/get_position', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.latitude && data.longitude) {
+                    var circle = L.circle([data.latitude, data.longitude], {
+                        color: 'red',
+                        fillColor: '#f03',
+                        fillOpacity: 0.5,
+                        radius: 5
+                    }).addTo(map);
+                    circles.push(circle);
+                }
+            });
+
+            setTimeout(updatePosition, 1000);  // 1초 간격으로 위치 업데이트
         }
 
         function setDestination() {
@@ -74,3 +95,4 @@
     <div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
 </body>
 </html>
+
