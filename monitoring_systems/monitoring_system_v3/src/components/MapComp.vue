@@ -5,7 +5,6 @@ import voyageData from '../assets/voyage-data.json'
 export default defineComponent({
   components: { GoogleMap, Marker, Circle },
   setup() {
-    // const center = { lat: 36.3721, lng: 127.3604 };
     // const center = { lat: 37.300163057152, lng: 126.83771082564 }
     const p1 = { lat: 37.2978, lng: 126.83339 } // start - point1
     const p2 = { lat: 37.29788, lng: 126.83358 } // point2
@@ -32,7 +31,7 @@ export default defineComponent({
   mounted() {
     this.pathOptions = this.initPath
     this.max_indices = this.voyageData.max_indices
-    setTimeout(this.startMove, 5000)
+    this.startMove()
   },
   methods: {
     // move() {
@@ -48,7 +47,7 @@ export default defineComponent({
 
     //   this.circles.push(option)
     // },
-    move() {
+    testmove() {
       const data = this.voyageData.shift()
       if (typeof data === "undefined") {
         return
@@ -56,8 +55,8 @@ export default defineComponent({
 
       const p1 = this.points[data.level]
       const p2 = this.points[data.level + 1]
-      console.log(p1)
-      console.log(p2)
+      // console.log(p1)
+      // console.log(p2)
 
       const dlatTotal = p2.lat - p1.lat
       const dlngTotal = p2.lng - p1.lng
@@ -72,7 +71,7 @@ export default defineComponent({
       this.circles.push(option)
     },
     startMove() {
-      this.interval = setInterval(this.move, 500)
+      this.interval = setInterval(this.testmove, 500)
     },
     endMove() {
       clearInterval(this.interval)
@@ -94,7 +93,6 @@ export default defineComponent({
     <Marker :options="markerOptions" @mouseup="console.log('marker position: ', this.markerOptions.position)" />
     <Circle v-for="circle in circles" :options="circle" :key="circle" v-bind="circles"></Circle>
     <!-- <Polyline :options="pathOptions" :key="pathOptions.path" /> -->
-
     <!-- <Polyline :options="examplePath" /> -->
   </GoogleMap>
 </template>

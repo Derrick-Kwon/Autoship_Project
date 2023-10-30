@@ -22,8 +22,8 @@ export default {
       const data = this.voyageData.shift().ridar_points
       for (let i = 0; i < data.length; i++) {
         const point = data[i]
-        console.log("point: ")
-        console.log(point)
+        // console.log("point: ")
+        // console.log(point)
         const noisex = Math.random() - 0.5
         const noisey = Math.random() - 0.5
         const center = this.width / 2
