@@ -11,12 +11,11 @@ import datetime, random, math
 #수정 테스트
 import forecast
 
-
 app = Flask(__name__)
 # 아두이노 시리얼 연결 설정
+
 destinations = deque()
 #arduino = serial.Serial('/dev/ttyACM0', 9600)  # 여기 포트 num은 라즈베리파이서 아두이노 실행시켜서 찾으면 됨(notion 참고)
-
 
 @app.route('/')
 def index():
@@ -31,7 +30,6 @@ def set_destination():  # 위도값, 경도값, 각도값 큐에 저장
     angle = atan2(deltaY, deltaX) * (180.0 / 3.141592653589793)
     destinations.append((deltaX, deltaY, latitude, longitude, angle))  # 방향벡터, 위도, 경도, 각도 순서.
     print("목적지를 추가하였습니다")
-
     return jsonify({"message": "Destination set successfully"})
 
 
@@ -41,6 +39,16 @@ def navigate():
     print("아두이노로 전송", deltaX, deltaY, destLat, destLng, angle)
     #arduino.write(f"h,{deltaX},{deltaY}\n".encode())  # h는 헤더, {destLat},{destLng},{angle} 는 추후 처리
     return jsonify({"message": "Navigating to set destination"})
+
+@app.route('/api/send')
+def send():
+    parameter = getparameter()
+    sql message = "insert data values(?, ?, ?, )"
+    conn.execute(message, parameter)
+
+# raspberry
+def sendData(speed, distance):
+    requests.post('url', {speed, distance})
 
 # API for fetch data
 @app.route('/api/fetch')
@@ -82,12 +90,8 @@ def print_msg():
         print("연결완료, 여기 함수안쪽부분 바꾸면 됨")
         time.sleep(1)
 
-
-
 if __name__ == '__main__':
     flask_thread = threading.Thread(target=run_flask_app) #앱은 다른 쓰레드에서 실행했음
     flask_thread.start()
     #read_gps_data()
-
-
     #print_msg() #여기 이부분이 추가 함수부분. 이 밑으로 수정하던가 함수 위에 추가로 만들면 됨.
