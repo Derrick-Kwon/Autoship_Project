@@ -14,7 +14,13 @@ def get_position():
     if nx['class'] == 'TPV':
         latitude = getattr(nx, 'lat', None)
         longitude = getattr(nx, 'lon', None)
-        return jsonify(latitude=latitude, longitude=longitude)
+        speed = getattr(nx, 'speed', None)  # Get the speed
+        if speed !=None: 
+            speed_kmh = 3.6*speed
+        else:
+            speed_kmh = speed
+            
+        return jsonify(latitude=latitude, longitude=longitude, speed=speed_kmh)
     else:
         return jsonify(error="No GPS data available")
 

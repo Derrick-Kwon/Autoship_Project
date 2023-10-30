@@ -16,7 +16,6 @@ app = Flask(__name__)
 destinations = deque() #큐 설정 
 arduino = serial.Serial('/dev/ttyACM2', 9600, timeout=1) #송신 라파->아두이노(서보모터조향각도)
 serial = serial.Serial('/dev/ttyUSB1', 115200, timeout=1) #수신 아두이노 -> 라파(라이더, IMU)
-
 serial.flush()
 
 #deltaX, deltaY가 전역으로 못쓸경우
