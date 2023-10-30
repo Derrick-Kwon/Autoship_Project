@@ -128,7 +128,7 @@ onMounted(() => {
         <div class="body-right-banner">
           <div>
             <RadorComp></RadorComp>
-            <div style="text-align: center; margin: 5px">{{ data['longitude'] }}°N {{ data['latitude'] }}°E</div>
+            <!-- <div style="text-align: center; margin: 5px">{{ data['longitude'] }}°N {{ data['latitude'] }}°E</div> -->
           </div>
           <div class="camera">
             <!-- <iframe width="240" height="180" frameBorder="0" src="http://192.168.137.73:9090/?action=stream">

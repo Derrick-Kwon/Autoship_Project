@@ -82,9 +82,16 @@ export default defineComponent({
 </script>
 
 <template>
-  <GoogleMap api-key="AIzaSyAzKCIGiO7ODgLmp5ZhPLb4p3TVG8vBVEc" style="width: 100%; height: 100%;" :center="points[2]"
+  <div class="destination-box" style="width: 100%; height:10%;">
+    <div class="destination-input">위도</div>
+    <input class="destination-input" type="text" :placeholder="this.center.lng">
+    <div class="destination-input">경도</div>
+    <input class="destination-input" type="text" :placeholder="this.center.lat">
+    <button class="login-button">목적지 변경</button>
+  </div>
+  <GoogleMap api-key="AIzaSyAzKCIGiO7ODgLmp5ZhPLb4p3TVG8vBVEc" style="width: 100%; height: 90%;" :center="points[2]"
     :zoom="20" language="kor" id="map" @mouseenter="startMove" @mouseleave="endMove">
-    <!-- <Marker :options="markerOptions" @mouseup="console.log('marker position: ', this.markerOptions.position)" /> -->
+    <Marker :options="markerOptions" @mouseup="console.log('marker position: ', this.markerOptions.position)" />
     <Circle v-for="circle in circles" :options="circle" :key="circle" v-bind="circles"></Circle>
     <!-- <Polyline :options="pathOptions" :key="pathOptions.path" /> -->
 
