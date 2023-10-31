@@ -38,7 +38,7 @@ description_of = {
 # Convert forecast response into proper format
 def convert_forecast(response):
   response_body = response.json()["response"]["body"]
-  print("response body: ", response_body)
+  # print("response body: ", response_body)
   itemlist = response_body["items"]["item"]
   result = {}
 
@@ -92,7 +92,7 @@ def api_forecast(lat, lng):
     print("the parameters were:")
     print(params)
 
-  print("result: ", result)
+  # print("result: ", result)
   return result
 
 

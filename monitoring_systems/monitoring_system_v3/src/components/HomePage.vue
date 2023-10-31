@@ -1,8 +1,9 @@
 <script setup>
 import MapComp from './MapComp.vue'
 import RadorComp from './RadorComp.vue';
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed, defineEmits } from 'vue'
 import axios from 'axios'
+import { emit } from 'process';
 
 // const topInfoNamesKor: Array<string> = ['경도', '위도', '진행률', '통신상태', '풍속', '풍향', '기온', '강수']
 // const bottomInfoNamesKor: Array<string> = ['속도', 'RPM', '연료량', '방향']
@@ -18,7 +19,7 @@ const nameToKor = new Map([
   ['temperature', '기온'],
   ['precipitation', '강수량'],
   ['speed', '속도'],
-  ['RPM', 'RPM'],
+  ['wave', '파고'],
   ['fuel', '연료량'],
   ['direction', '방향'],
   ['mode', '작동모드'],
@@ -28,7 +29,7 @@ const nameToKor = new Map([
   ['tilt', '기울기']
 ])
 const topInfoNames = ['longitude', 'latitude', 'progress', 'communication', 'windSpeed', 'windDirection', 'temperature', 'precipitation']
-const bottomInfoNames = ['speed', 'RPM', 'fuel', 'direction']
+const bottomInfoNames = ['speed', 'wave', 'fuel', 'direction']
 const middleInfoNames = ['mode', 'danger', 'status', 'crash', 'tilt']
 
 const data = ref()
@@ -42,8 +43,8 @@ const sample = {
   windDirection: 40,
   temperature: 30,
   precipitation: 0.1,
-  RPM: 3000,
-  fuel: 60,
+  wave: 5,
+  fuel: 80,
   direction: 50,
   mode: 'autonomous',
   danger: 40,
@@ -51,18 +52,35 @@ const sample = {
   speed: 5,
   crash: 40,
   tilt: 2,
+  ridar: [],
 }
 const sampleWeather = {'id': 139, 'basetime': '202310310300', 'nx': 67, 'ny': 101, 'T1H': 0, 'RN1': 0, 'UUU': 0, 'VVV': 0, 'REH': 0, 'PTY': 0, 'VEC': 0, 'WSD': 0}
+
+const tilt = computed(() => {
+  const p = parseFloat(data.value['pitch'])
+  const r = parseFloat(data.value['roll'])
+  return Math.atan(Math.sqrt(Math.tan(r)**2+Math.tan(p)**2)).toPrecision(2)
+})
 
 data.value = sample
 weather.value = sampleWeather
 
 // database
+defineEmits(['fetch'])
 async function testData() {
   axios.get('/api/fetch')
     .then((res) => {
       console.log('fetch: ', res.data)
-      data.value = res.data
+      const dlat = data.value.latitude -  res.data.latitude
+      const dlng = data.value.longitude -  res.data.longitude
+      data.value.direction = Math.atan(dlng/dlat)
+      data.value.latitude = res.data.latitude
+      data.value.longitude = res.data.longitude
+      data.value.roll = res.data.roll
+      data.value.ridar = res.data.ridar
+      data.value.speed = res.data.speed
+      
+      emit('fetch', res.data)
     })
     .catch((err) => {
       console.error(err)
@@ -122,7 +140,7 @@ onMounted(() => {
           <div v-for="name in middleInfoNames" class="info middle-info" v-bind:key="name">
             <div class="name">{{ nameToKor.get(name) }}</div>
             <div>
-              <span v-if="name == 'tilt'" class="value tilt">{{ data[name] }}°</span>
+              <span v-if="name == 'tilt'" class="value tilt">{{ tilt }}°</span>
               <span v-else :class="'value '+ name">{{ data[name] }}</span>
             </div>
           </div>
@@ -132,14 +150,14 @@ onMounted(() => {
         </div>
         <div class="body-right-banner">
           <div>
-            <RadorComp></RadorComp>
+            <RadorComp :ridar="data.ridar"></RadorComp>
             <!-- <div style="text-align: center; margin: 5px">{{ data['longitude'] }}°N {{ data['latitude'] }}°E</div> -->
           </div>
           <div class="camera">
             <!-- <iframe width="240" height="180" frameBorder="0" src="http://192.168.137.73:9090/?action=stream">
               </iframe> -->
             <!-- <img src="http://192.168.137.73:9090/?action=stream"> -->
-            <img src="http://192.168.137.177:8081" width="240" height="180">
+            <img src="http://192.168.137.204:8081/" width="300" height="200">
           </div>
         </div>
       </div>
@@ -151,7 +169,7 @@ onMounted(() => {
             <span v-else-if="name == 'fuel'" class="value fuel">{{ data[name] }}%</span>
             <span v-else-if="name == 'direction'" class="material-icons value direction"
               :style="{ rotate: data[name] + 'deg' }">north</span>
-            <span v-else :class="'value '+name">{{ data[name] }}</span>
+            <span v-else :class="'value '+name">{{ data[name] }}m</span>
           </div>
         </div>
       </div>

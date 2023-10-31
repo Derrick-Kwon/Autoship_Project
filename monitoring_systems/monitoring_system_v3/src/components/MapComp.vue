@@ -2,6 +2,7 @@
 import { defineComponent, ref } from 'vue'
 import { Circle, GoogleMap, Marker, InfoWindow, Polyline } from 'vue3-google-map'
 import voyageData from '../assets/voyage-data.json'
+import axios from 'axios'
 export default defineComponent({
   components: { GoogleMap, Marker, Circle, InfoWindow, Polyline },
   setup() {
@@ -36,7 +37,8 @@ export default defineComponent({
   },
   mounted() {
     this.pathOptions = this.initPath
-    this.max_indices = this.voyageData.max_indices
+    // this.max_indices = this.voyageData.max_indices
+    setInterval(this.move, 2000)
   },
   methods: {
     testmove() {
@@ -69,6 +71,24 @@ export default defineComponent({
     },
     endMove() {
       clearInterval(this.interval)
+    },
+    move() {
+      axios.get('/api/getPosition')
+        .then((res) => {
+          console.log('getPosition: ', res.data)
+          const point = res.data
+          const option = this.circleOptions
+          option.date = Date()
+          option.center.lat = point.lat
+          option.center.lng = point.lng
+          
+          this.circles.push(option)
+          this.pathOptions.path.push(this.pathOptions.path[this.pathOptions.path.length-1])
+          this.pathOptions.path[this.pathOptions.path.length-2] = {lat: option.center.lat, lng: option.center.lng}
+        })
+        .catch((err) => {
+          console.error(err)
+        })
     },
     setDestination(location) {
       const lat = location.latLng.lat()
@@ -112,7 +132,7 @@ export default defineComponent({
     <!-- <button class="destination-button"><div>목적지 변경</div></button> -->
   </div>
   <GoogleMap api-key="AIzaSyAzKCIGiO7ODgLmp5ZhPLb4p3TVG8vBVEc" style="width: 100%; height: 90%;" :center="points[2]"
-    :zoom="20" language="kor" id="map" @mouseenter="startMove" @mouseleave="endMove">
+    :zoom="20" language="kor" id="map">
     <Marker :options="markerOption" @mouseup="setDestination" v-bind:ref="mlat" />
     <InfoWindow :options="{ position: {lat: initCenter.lat+0.00005, lng: initCenter.lng}, content: '목적지 설정을 위해 마커를 옮겨 주세요.' }" />
     <Circle v-for="circle in circles" :options="circle" :key="circle" v-bind="circles"></Circle>

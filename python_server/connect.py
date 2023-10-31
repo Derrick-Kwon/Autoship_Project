@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import math
 import random
 from flask import jsonify
@@ -6,11 +6,16 @@ import mysql.connector
 import forecast
 import grid
 
+# 데이터베이스 연결을 위한 설정값. 실행하는 환경에 따라 다르게 설정해 준다.
+user = "root"
+pw = "mariapass"
+db = "raspi_db"
+
 # conn = mysql.connector.connect(
 #   host="localhost",
-#   user="root",
-#   password="mariapass",
-#   database="raspi_db",
+#   user= user,
+#   password= pw ,
+#   database=db,
 #   autocommit=True,
 # )
 
@@ -22,18 +27,26 @@ def insert_data(values):
   # fuel, direction, mode, danger, status, speed, crash, tilt) \
   # VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
   insert_query = "insert into sensor(id, create_time, latitude, longitude, speed, \
-    pitch, roll, risk, angle, distance)\
-    values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    pitch, roll, risk)\
+    values(0, %s, %s, %s, %s, %s, %s, %s)"
   conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="kwon6821",
-    database="Tables",
+    user= user,
+    password= pw ,
+    database=db,
     autocommit=True,
   )
   cursor = conn.cursor()
-  cursor.execute(insert_query, values)
+  print(values[0:7])
   result = cursor.fetchone()
+
+  ridar_insert = "insert into ridar(id, create_time, angle, distance) \
+    values(0, %s, %s, %s)"
+  ridar = []
+  for i in range(len(values[6])):
+    ridar.append((datetime.now(), values[6][i][0], values[6][i][1]))
+  # print(ridar)
+  cursor.executemany(ridar_insert, ridar)
   cursor.close()
   conn.close()
   return result
@@ -41,9 +54,9 @@ def insert_data(values):
 def insert_weather(values):
   conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="kwon6821",
-    database="Tables",
+    user= user,
+    password= pw ,
+    database=db,
     autocommit=True,
   )
   cursor = conn.cursor()
@@ -59,9 +72,9 @@ def insert_weather(values):
 def get_data():
   conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="kwon6821",
-    database="Tables",
+    user= user,
+    password= pw ,
+    database=db,
     autocommit=True,
   )
   cursor = conn.cursor()
@@ -73,20 +86,29 @@ def get_data():
   result = {}
 
   columns = cursor.description
-  cursor.close()
-  conn.close()
-
   # Convert result row into an object
   for i in range(len(result_row)):
       result[columns[i][0]] = result_row[i]
+
+  ridar_message = "select * from ridar order by id desc limit 100;"
+  cursor.execute(ridar_message)
+  result_rows = cursor.fetchall()
+  ridars = []
+  for i in range(len(result_rows)):
+    ridars.append((result_rows[i][2], result_rows[i][3]))
+  result['ridar'] = ridars
+  print("ridars: ", ridars)
+
+  cursor.close()
+  conn.close()
   return jsonify(result)
 
 def get_latest_weather():
   conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="kwon6821",
-    database="Tables",
+    user= user,
+    password= pw ,
+    database=db,
     autocommit=True,
   )
   cursor = conn.cursor()
@@ -109,9 +131,9 @@ def get_latest_weather():
 def get_weather(lat, lng):
   conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="kwon6821",
-    database="Tables",
+    user= user,
+    password= pw ,
+    database=db,
     autocommit=True,
   )
   cursor = conn.cursor()
@@ -121,13 +143,13 @@ def get_weather(lat, lng):
   
   # if the result is new, request for new data.
   new_position = grid.dfs_xy_conv("toXY", lat, lng)
-  if result == {}:
-    print("result empty")
-  else:
-    if result['basetime'][8:12] != forecast.base_time():
-      print("different basetime: ", result['basetime'][8:12], "", forecast.base_time())
-    if result['nx'] != new_position['x'] or result['ny'] != new_position['y']:
-      print("different position")
+  # if result == {}:
+  #   # print("result empty")
+  # else:
+  #   if result['basetime'][8:12] != forecast.base_time():
+  #     print("different basetime: ", result['basetime'][8:12], "", forecast.base_time())
+  #   if result['nx'] != new_position['x'] or result['ny'] != new_position['y']:
+  #     print("different position")
 
   if result != {} and result['basetime'] == forecast.base_time() and result['nx'] == new_position['x'] and result['ny'] == new_position['y']:
     return result
@@ -162,7 +184,7 @@ def get_weather(lat, lng):
 
 def gen_random_data():
   id = 0
-  create_time = datetime.datetime.now()
+  create_time = datetime.now()
   longitude = 180 * random.random()
   latitude = 180 * random.random()
   progress = 100 * random.random()

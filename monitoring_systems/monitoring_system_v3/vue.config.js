@@ -9,7 +9,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:5000"
+        target: "http://192.168.43.144:5000"
       },
       // "/weather": {
       //   target: "https://apihub.kma.go.kr/api/typ01/url/sea_obs.php?stn=0&help=1&authKey=r6zpsnyoT4ys6bJ8qF-MCw",

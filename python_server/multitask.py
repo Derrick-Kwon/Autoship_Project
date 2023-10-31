@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request, jsonify, render_template
 import serial
 from collections import deque
@@ -42,17 +43,17 @@ def navigate():
 
 @app.route('/api/send', methods=['POST'])
 def send():
-    data = request.data
-    values = (0, datetime.datetime.now(), data['latitude'], data['longitude'],
+    data = request.json
+    values = (data['latitude'], data['longitude'],
               data['speed'], data['pitch'], data['roll'],
-              data['risk'], data['angle'], data['distance'])
+              data['risk'], data['ridar'])
     connect.insert_data(values)
-    
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
     
 # API for fetch data
 @app.route('/api/fetch')
 def fetch():
-    connect.gen_random_data()
+    # connect.gen_random_data()
     result = connect.get_data()
     return result
 
@@ -72,15 +73,13 @@ def weather():
     return jsonify(result)
 
 
-@app.route('/get_position')
+@app.route('/api/get_position')
 def get_position():
-    nx = cgps.next()
-    if nx['class'] == 'TPV':
-        latitude = getattr(nx, 'lat', None)
-        longitude = getattr(nx, 'lon', None)
-        return jsonify(latitude=latitude, longitude=longitude)
-    else:
-        return jsonify(error="No GPS data available")
+    data = connect.get_data()
+    result = {}
+    result['lng'] = data['longitude']
+    result['lat'] = data['latitude']
+    return jsonify(result)
 
 def print_msg():
     for i in range(100):
