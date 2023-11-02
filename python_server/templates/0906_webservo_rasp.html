@@ -10,14 +10,14 @@
         var destinationMarker;
         var line;
 
-        function initMap() {
+        function initMap() { //map 시작
             map = L.map('map').setView([0, 0], 13);  // Initial view
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: 'Map data &copy; OpenStreetMap contributors'
             }).addTo(map);
 
-            updatePosition();
+            updatePosition(); //위치 update 함수호출
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -27,7 +27,7 @@
                 });
             }
         }
-        function updatePosition() {
+        function updatePosition() { //py에서, 위도경도 data fetch(.py->web)
             fetch('/get_position', {
                 method: 'GET'
             })
@@ -44,7 +44,7 @@
                 }
             });
 
-            setTimeout(updatePosition, 1000);  // 1초 간격으로 위치 업데이트
+            setTimeout(updatePosition, 3000);  // 1초 간격으로 위치 업데이트
         }
 
         function setDestination() {

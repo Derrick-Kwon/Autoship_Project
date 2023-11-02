@@ -8,8 +8,8 @@ import grid
 
 # 데이터베이스 연결을 위한 설정값. 실행하는 환경에 따라 다르게 설정해 준다.
 user = "root"
-pw = "mariapass"
-db = "raspi_db"
+pw = "kwon6821"
+db = "mydatabase" #데이터베이스이름"
 
 # conn = mysql.connector.connect(
 #   host="localhost",
@@ -38,7 +38,8 @@ def insert_data(values):
   )
   cursor = conn.cursor()
   print(values[0:7])
-  result = cursor.fetchone()
+  cursor.execute(insert_query, (datetime.now(), ) + values[0:6])
+  result = cursor.fetchone() 
 
   ridar_insert = "insert into ridar(id, create_time, angle, distance) \
     values(0, %s, %s, %s)"
@@ -49,7 +50,7 @@ def insert_data(values):
   cursor.executemany(ridar_insert, ridar)
   cursor.close()
   conn.close()
-  return result
+  return 
 
 def insert_weather(values):
   conn = mysql.connector.connect(
@@ -144,7 +145,8 @@ def get_weather(lat, lng):
   # if the result is new, request for new data.
   new_position = grid.dfs_xy_conv("toXY", lat, lng)
   # if result == {}:
-  #   # print("result empty")
+  #   print("result empty")
+  #   return result    
   # else:
   #   if result['basetime'][8:12] != forecast.base_time():
   #     print("different basetime: ", result['basetime'][8:12], "", forecast.base_time())
@@ -156,8 +158,8 @@ def get_weather(lat, lng):
 
   # Get weather data
   forecast_result = forecast.api_forecast(lat, lng)
-  if forecast_result['basetime'] == result['basetime'] and result['nx'] == new_position['x'] and result['ny'] == new_position['y']:
-    return result
+  # if forecast_result['basetime'] == result['basetime'] and result['nx'] == new_position['x'] and result['ny'] == new_position['y']:
+  #   return result
 
   # Insert weather data into database
   basetime = forecast_result['basetime']

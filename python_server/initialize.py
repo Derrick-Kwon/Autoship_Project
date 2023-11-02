@@ -49,3 +49,31 @@ init_sensor = "DROP TABLE IF EXISTS sensor;\
 cursor.execute(init_sensor)
 cursor.close()
 conn.close()
+
+conn = mysql.connector.connect(
+  host="localhost",
+  user=connect.user,
+  password=connect.pw,
+  database=connect.db,
+  autocommit=True,
+)
+cursor = conn.cursor()
+init_sensor = "DROP TABLE IF EXISTS weather;\
+CREATE TABLE `weather` (\
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',\
+  `basetime` varchar(12) DEFAULT NULL,\
+  `nx` int(11) DEFAULT NULL,\
+  `ny` int(11) DEFAULT NULL,\
+  `T1H` decimal(5,2) DEFAULT NULL,\
+  `RN1` decimal(5,2) DEFAULT NULL,\
+  `UUU` decimal(5,2) DEFAULT NULL,\
+  `VVV` decimal(5,2) DEFAULT NULL,\
+  `REH` decimal(5,2) DEFAULT NULL,\
+  `PTY` int(11) DEFAULT NULL,\
+  `VEC` int(11) DEFAULT NULL,\
+  `WSD` decimal(5,2) DEFAULT NULL,\
+  PRIMARY KEY (`id`)\
+);"
+cursor.execute(init_sensor)
+cursor.close()
+conn.close()

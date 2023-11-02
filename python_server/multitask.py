@@ -6,17 +6,16 @@ from math import atan2
 import threading
 import time
 #import gpsd
-import connect
-import requests
 import datetime, random, math
 #수정 테스트
+import connect
+import requests
 import forecast
 
 app = Flask(__name__)
 # 아두이노 시리얼 연결 설정
 
 destinations = deque()
-#arduino = serial.Serial('/dev/ttyACM0', 9600)  # 여기 포트 num은 라즈베리파이서 아두이노 실행시켜서 찾으면 됨(notion 참고)
 
 @app.route('/')
 def index():

@@ -7,8 +7,10 @@ base = datetime.now() - timedelta(minutes=30)
 year = str(base.year)
 month = str(base.month)
 day = str(base.day)
-
+if base.day <10:
+  day = '0' + day
 dateString = year + month + day
+
 hours = str(base.hour)
 minutes = str(base.minute)
 seconds = str(base.second)

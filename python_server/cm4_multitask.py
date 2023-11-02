@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import serial
 import time
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 from collections import deque
 from math import atan2
 import threading
@@ -97,6 +97,7 @@ def print_msg():
 #             line = serial.readline().decode('utf-8').strip() #공백기준으로 나누고
 
 #             print(f'Received data from Arduino (ridar_data): {line}')
+
 def print_imu_serial():
     isFirst = True
     while True:
@@ -104,9 +105,9 @@ def print_imu_serial():
             try:
                 line = serial.readline().decode('utf-8').strip()
             except:
-                continue
+                continue #오류값처리
             arr = line.split()
-            if isFirst:
+            if isFirst: #첫행넘기기
                 isFirst = False
                 continue
 
