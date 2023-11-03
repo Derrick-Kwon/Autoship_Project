@@ -9,9 +9,9 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       "/api": {
-        target: "http://192.168.43.144:5000"
+        target: "http://192.168.43.235:5000" //이부분 바꿈
       },
-      // "/weather": {
+      // "/weather": 
       //   target: "https://apihub.kma.go.kr/api/typ01/url/sea_obs.php?stn=0&help=1&authKey=r6zpsnyoT4ys6bJ8qF-MCw",
       //   pathRewrite: { '^weather': '' },
       //   changeOrigin: true,

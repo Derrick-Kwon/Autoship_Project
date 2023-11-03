@@ -5,6 +5,8 @@ import voyageData from '../assets/voyage-data.json'
 import axios from 'axios'
 export default defineComponent({
   components: { GoogleMap, Marker, Circle, InfoWindow, Polyline },
+  props: ['data'],
+
   setup() {
     // const center = { lat: 37.300163057152, lng: 126.83771082564 }
     const p1 = { lat: 37.2978, lng: 126.83339 } // start - point1
@@ -38,7 +40,7 @@ export default defineComponent({
   mounted() {
     this.pathOptions = this.initPath
     // this.max_indices = this.voyageData.max_indices
-    setInterval(this.move, 2000)
+    setTimeout(this.move, 6000)
   },
   methods: {
     testmove() {
@@ -73,22 +75,16 @@ export default defineComponent({
       clearInterval(this.interval)
     },
     move() {
-      axios.get('/api/getPosition')
-        .then((res) => {
-          console.log('getPosition: ', res.data)
-          const point = res.data
           const option = this.circleOptions
           option.date = Date()
-          option.center.lat = point.lat
-          option.center.lng = point.lng
+          option.center.lat = parseFloat(this.data.latitude)
+          option.center.lng = parseFloat(this.data.longitude)
           
           this.circles.push(option)
           this.pathOptions.path.push(this.pathOptions.path[this.pathOptions.path.length-1])
           this.pathOptions.path[this.pathOptions.path.length-2] = {lat: option.center.lat, lng: option.center.lng}
-        })
-        .catch((err) => {
-          console.error(err)
-        })
+
+          setTimeout(this.move, 2000)
     },
     setDestination(location) {
       const lat = location.latLng.lat()

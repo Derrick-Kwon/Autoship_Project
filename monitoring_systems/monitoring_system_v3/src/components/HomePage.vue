@@ -51,22 +51,47 @@ const sample = {
   status: 'safe',
   speed: 5,
   crash: 40,
-  tilt: 2,
+  tilt: "",
   ridar: [],
+  pitch: 0,
+  roll: 0
 }
 const sampleWeather = {'id': 139, 'basetime': '202310310300', 'nx': 67, 'ny': 101, 'T1H': 0, 'RN1': 0, 'UUU': 0, 'VVV': 0, 'REH': 0, 'PTY': 0, 'VEC': 0, 'WSD': 0}
 
 const tilt = computed(() => {
-  const p = parseFloat(data.value['pitch'])
-  const r = parseFloat(data.value['roll'])
-  return Math.atan(Math.sqrt(Math.tan(r)**2+Math.tan(p)**2)).toPrecision(2)
+  let p = parseFloat(data.value['pitch'])
+  let r = parseFloat(data.value['roll'])
+  return Math.floor(100*Math.atan(Math.sqrt(Math.tan(r)**2+Math.tan(p)**2)))/100
 })
+
+const crash = computed(() => {
+  let minlen = 300
+  for (let i=0; i<data.value.ridar.length; i++) {
+    if (data.value.ridar[i][1]<minlen) {
+      minlen = data.value.ridar[i][1]
+    }
+  }
+  return Math.floor(Math.min((-1)*Math.log(minlen/300), 100))
+})
+const danger = computed(() => {
+  let tiltDanger = Math.min(tilt.value/40*100, 100)
+  return Math.floor(Math.max(crash.value, tiltDanger))
+})  
+const status = computed(() => {
+  let message = ""
+  if (danger.value>70) message = "danger"
+  else if (danger.value>50) message = "caution"
+  else message = "safe"
+
+  return message
+})
+
 
 data.value = sample
 weather.value = sampleWeather
 
 // database
-defineEmits(['fetch'])
+
 async function testData() {
   axios.get('/api/fetch')
     .then((res) => {
@@ -77,10 +102,9 @@ async function testData() {
       data.value.latitude = res.data.latitude
       data.value.longitude = res.data.longitude
       data.value.roll = res.data.roll
+      data.value.pitch = res.data.pitch
       data.value.ridar = res.data.ridar
       data.value.speed = res.data.speed
-      
-      emit('fetch', res.data)
     })
     .catch((err) => {
       console.error(err)
@@ -115,8 +139,8 @@ onMounted(() => {
         <div class="info" v-for="name in topInfoNames" v-bind:key="name">
           <div class="name">{{ nameToKor.get(name) }}</div>
           <div>
-            <span v-if="name == 'longitude'" class="value longitude">{{ data[name] }}°N</span>
-            <span v-else-if="name == 'latitude'" class="value latitude">{{ data[name] }}°E</span>
+            <span v-if="name == 'longitude'" class="value longitude">{{ Math.round(100000*data[name])/100000 }}°N</span>
+            <span v-else-if="name == 'latitude'" class="value latitude">{{ Math.round(100000*data[name])/100000 }}°E</span>
             <span v-else-if="name == 'progress'" class="value progress">{{ data[name] }}%</span>
             <span v-else-if="name == 'communication' && data[name] == 1" class="material-icons value communication">
               signal_cellular_alt_1_bar
@@ -141,12 +165,15 @@ onMounted(() => {
             <div class="name">{{ nameToKor.get(name) }}</div>
             <div>
               <span v-if="name == 'tilt'" class="value tilt">{{ tilt }}°</span>
+              <span v-if="name == 'crash'" class="value crash">{{ crash }}</span>
+              <span v-if="name == 'danger'" class="value danger">{{ danger }}</span>
+              <span v-if="name == 'status'" class="value status">{{ status }}</span>
               <span v-else :class="'value '+ name">{{ data[name] }}</span>
-            </div>
+            </div> 
           </div>
         </div>
         <div id="map" class="map" style="flex-grow: 1;">
-          <MapComp></MapComp>
+          <MapComp :data="data"></MapComp> 
         </div>
         <div class="body-right-banner">
           <div>
@@ -157,7 +184,7 @@ onMounted(() => {
             <!-- <iframe width="240" height="180" frameBorder="0" src="http://192.168.137.73:9090/?action=stream">
               </iframe> -->
             <!-- <img src="http://192.168.137.73:9090/?action=stream"> -->
-            <img src="http://192.168.137.204:8081/" width="300" height="200">
+            <img src="http://192.168.137.9:8081/" width="300" height="200">
           </div>
         </div>
       </div>
@@ -168,7 +195,7 @@ onMounted(() => {
             <span v-if="name == 'speed'" class="value speed">{{ data[name] }}km/h</span>
             <span v-else-if="name == 'fuel'" class="value fuel">{{ data[name] }}%</span>
             <span v-else-if="name == 'direction'" class="material-icons value direction"
-              :style="{ rotate: data[name] + 'deg' }">north</span>
+              :style="{ rotate: '60' + 'deg' }">north</span>
             <span v-else :class="'value '+name">{{ data[name] }}m</span>
           </div>
         </div>

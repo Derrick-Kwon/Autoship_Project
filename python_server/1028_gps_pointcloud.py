@@ -14,7 +14,7 @@ def get_position():
     if nx['class'] == 'TPV':
         latitude = getattr(nx, 'lat', None)
         longitude = getattr(nx, 'lon', None)
-        speed = getattr(nx, 'speed', None)  # Get the speed
+        speed = getattr(nx, 'speed', None)  
         if speed !=None: 
             speed_kmh = 3.6*speed
         else:
