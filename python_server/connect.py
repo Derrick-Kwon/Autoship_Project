@@ -39,7 +39,7 @@ def insert_data(values):
   cursor = conn.cursor()
   print(values[0:7])
   cursor.execute(insert_query, (datetime.now(), ) + values[0:6])
-  result = cursor.fetchone() 
+  result = cursor.fetchone()
 
   ridar_insert = "insert into ridar(id, create_time, angle, distance) \
     values(0, %s, %s, %s)"

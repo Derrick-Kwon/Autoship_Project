@@ -8,8 +8,8 @@
         var map;
         var circles = [];
 
-        function initMap() {
-            map = L.map('map').setView([0, 0], 13);  // Initial view
+        function initMap() { //맵 열고
+            map = L.map('map').setView([0, 0], 13);  // 시작화면
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: 'Map data &copy; OpenStreetMap contributors'
@@ -29,7 +29,7 @@
                         color: 'red',
                         fillColor: '#f03',
                         fillOpacity: 0.5,
-                        radius: 5
+                        radius: 3
                     }).addTo(map);
                     circles.push(circle);
                 }

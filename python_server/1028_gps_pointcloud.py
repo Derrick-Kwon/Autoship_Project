@@ -3,6 +3,10 @@ from gps import *
 
 app = Flask(__name__)
 cgps = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)
+database = {
+'latitude' : None,
+'longitude' : None,
+'speed': None}
 
 @app.route('/')
 def index():
@@ -23,7 +27,6 @@ def get_position():
         return jsonify(latitude=latitude, longitude=longitude, speed=speed_kmh)
     else:
         return jsonify(error="No GPS data available")
-
 if __name__ == '__main__':
       app.run(debug=True)
 
