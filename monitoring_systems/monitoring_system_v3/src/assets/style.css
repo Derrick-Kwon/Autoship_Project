@@ -270,3 +270,12 @@
 .destination-button:active {
   background-color: #147D87;
 }
+
+.dangerous {
+  color: red;
+}
+
+.alert {
+  height: 15px;
+  width: auto;
+}

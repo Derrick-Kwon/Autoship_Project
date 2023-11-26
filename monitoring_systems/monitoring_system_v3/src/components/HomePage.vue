@@ -162,11 +162,16 @@ onMounted(() => {
       <div class="monitor-body">
         <div class="body-left-banner">
           <div v-for="name in middleInfoNames" class="info middle-info" v-bind:key="name">
-            <div class="name">{{ nameToKor.get(name) }}</div>
+            <div class="name">
+              <img v-if="name=='tilt'&&tilt>20" src="../assets/red-alert-icon.png" class="alert">
+              <img v-else-if="name=='crash'&&crash>70" src="../assets/red-alert-icon.png" class="alert">
+              <img v-else-if="name=='danger'&&danger>70" src="../assets/red-alert-icon.png" class="alert">
+              {{ nameToKor.get(name) }}
+            </div>
             <div>
-              <span v-if="name == 'tilt'" class="value tilt">{{ tilt }}°</span>
-              <span v-if="name == 'crash'" class="value crash">{{ crash }}</span>
-              <span v-if="name == 'danger'" class="value danger">{{ danger }}</span>
+              <span v-if="name == 'tilt'" v-bind:class="'value tilt'+(tilt>20?'dangerous':'')">{{ tilt }}°</span>
+              <span v-if="name == 'crash'" v-bind:class="'value crash'+(crash>70?'dangerous':'')">{{ crash }}</span>
+              <span v-if="name == 'danger'" v-bind:class="'value danger'+(danger>70?'dangerous':'')">{{ danger }}</span>
               <span v-if="name == 'status'" class="value status">{{ status }}</span>
               <span v-else :class="'value '+ name">{{ data[name] }}</span>
             </div> 
