@@ -1,2 +1,2 @@
 # Autoship_Project
-repository for the autoship project
+repository for the Hyeoung Jin Kwon
