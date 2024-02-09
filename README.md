@@ -1,6 +1,5 @@
 # Autoship_Project
-repository for the autoship project
-make branch and explain in main README.md
+repository for the autoship project. please make branch and leave the log in the README.md
 
 ship_process Branch:  라즈베리파이에서 돌리는 파일
 
