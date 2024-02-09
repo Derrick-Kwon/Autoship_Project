@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map Navigation with Leaflet</title>
+    <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map;
+        var userMarker;
+        var destinationMarker;
+        var line;
+
+        function initMap() {
+            map = L.map('map').setView([0, 0], 13);  // Initial view
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            updatePosition();
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var pos = [position.coords.latitude, position.coords.longitude];
+                    map.setView(pos, 15);
+                    userMarker = L.marker(pos).addTo(map).bindPopup('Your Location').openPopup();
+                });
+            }
+        }
+        function updatePosition() {
+            fetch('/get_position', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.latitude && data.longitude) {
+                    var circle = L.circle([data.latitude, data.longitude], {
+                        color: 'red',
+                        fillColor: '#f03',
+                        fillOpacity: 0.5,
+                        radius: 2
+                    }).addTo(map);
+                    circles.push(circle);
+                }
+            });
+            setTimeout(updatePosition, 1000);  // 1초 간격으로 위치 업데이트
+            
+        }
+
+        function setDestination() {
+            var lat = parseFloat(document.getElementById('latitude').value);
+            var lng = parseFloat(document.getElementById('longitude').value);
+
+            if(destinationMarker) {
+                map.removeLayer(destinationMarker);
+            }
+
+            if(line) {
+                map.removeLayer(line);
+            }
+
+            destinationMarker = L.marker([lat, lng]).addTo(map).bindPopup('Destination').openPopup();
+            line = L.polyline([userMarker.getLatLng(), destinationMarker.getLatLng()]).addTo(map);
+
+            var requestData = {
+                destLat: lat,
+                destLng: lng,
+                deltaX: destinationMarker.getLatLng().lng - userMarker.getLatLng().lng,
+                deltaY: destinationMarker.getLatLng().lat - userMarker.getLatLng().lat
+            };
+
+            fetch('/set_destination', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+        }
+
+        function navigate() {
+            fetch('/navigate', {
+                method: 'GET'
+            });
+        }
+    </script>
+</head>
+<body onload="initMap()">
+    <div>
+        <input type="text" id="latitude" placeholder="Latitude">
+        <input type="text" id="longitude" placeholder="Longitude">
+        <button onclick="setDestination()">도착지 설정</button>
+        <button onclick="navigate()">navigate</button>
+    </div>
+    <div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+</body>
+</html>
+

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serial Data Display</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Serial Data Display</h1>
+    <div id="data-display">
+        <p>Latitude: <span id="latitude"></span></p>
+        <p>Longitude: <span id="longitude"></span></p>
+        <p>Speed: <span id="speed"></span> km/h</p>
+        <p>Pitch: <span id="pitch"></span></p>
+        <p>Roll: <span id="roll"></span></p>
+        <p>Risk: <span id="risk"></span></p>
+        <h2>Ridar Data</h2>
+        <ul id="ridar-list"></ul>
+    </div>
+
+    <script>
+        function fetchSerialData() {
+            $.ajax({
+                url: '/fetch_serial_data',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#latitude').text(data.latitude);
+                    $('#longitude').text(data.longitude);
+                    $('#speed').text(data.speed);
+                    $('#pitch').text(data.pitch);
+                    $('#roll').text(data.roll);
+                    $('#risk').text(data.risk);
+                    const ridarList = $('#ridar-list');
+                    ridarList.empty(); // Clear the list
+                    data.ridar.forEach(function(ridarData) {
+                        ridarList.append('<li>Angle: ' + ridarData[0] + ', Distance: ' + ridarData[1] + ' cm</li>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching data: ' + error);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            // Fetch data every 2 seconds
+            setInterval(fetchSerialData, 2000);
+        });
+    </script>
+</body>
+</html>
